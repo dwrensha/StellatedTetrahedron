@@ -5,7 +5,8 @@
 </p>
 
 This project proves, in Lean 4, that the stellated tetrahedron `P_{11/20}`
-(the convex hull of a regular tetrahedron and its reflection scaled by `11/20`)
+(the convex hull of the regular tetrahedron and its reflection scaled by `11/20`,
+not to be confused with the [triakis tetrahedon](https://en.wikipedia.org/wiki/Triakis_tetrahedron))
 does not have [Rupert's property](https://en.wikipedia.org/wiki/Prince_Rupert%27s_cube):
 no copy of it fits through a hole in itself.
 
