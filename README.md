@@ -9,7 +9,7 @@ does not have the [Rupert property](https://en.wikipedia.org/wiki/Prince_Rupert%
 This polyhedron was [suggested by Tony Zeng](https://arxiv.org/pdf/2604.26531) as a candidate
 for the simplest possible such "Nopert".
 (It is not to be confused with the [triakis tetrahedon](https://en.wikipedia.org/wiki/Triakis_tetrahedron),
-which can alternately be referred to as the "3/5 stellated tetrahedron".)
+which might alternately be referred to as the "3/5 stellated tetrahedron".)
 
 Our main formal assertion is `¬ IsRupert exactVerts`, where `IsRupert` is the Mathlib-only definition in
 [`Noperts/MainTheorem.lean`](Noperts/MainTheorem.lean) and `exactVerts` are the vertices
@@ -23,7 +23,7 @@ its infrastructure.
 
 Our strategy is to subdivide the configuration space into many small regions
 and then to prove that no Rupert passage exists for any of them.
-The soundness of this strategy is formalized as `not_rupert_of_valid_table`
+The soundness of this strategy is formalized as `not_rupert_of_valid_table` and `not_rupert_of_root`
 in [`IsNotRupert.lean`](Noperts/Stellated/IsNotRupert.lean).
 
 The data of the subdivision lives in "pack" files (totalling about 1.2 GB, 121 MB compressed),
