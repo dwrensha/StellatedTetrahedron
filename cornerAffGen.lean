@@ -212,7 +212,6 @@ def main (args : List String) : IO Unit := do
       let pre := s!"Noperts.Stellated.KernelCorner.{tn}"
       IO.FS.createDirAll s!"{outDir}/{tn}"
       IO.FS.createDirAll dataDir
-      let absData ← IO.FS.realPath dataDir
       -- facts slice: facts, fact polynomials, and the root node
       let mut fout : Array Nat := #[st.facts.size]
       for fr in st.facts do
@@ -220,7 +219,7 @@ def main (args : List String) : IO Unit := do
       for fp in st.fps do fout := fout ++ factPolyT fp
       fout := fout ++ #[1, 2, 0, 1] ++ frameT rootF ++ #[0]
       let factsS := ",".intercalate (fout.toList.map toString) ++ ","
-      IO.FS.writeFile s!"{absData}/{tn}.facts.slice3" factsS
+      IO.FS.writeFile s!"{dataDir}/{tn}.facts.slice3" factsS
       IO.FS.writeFile s!"{outDir}/{tn}/Facts.lean" s!"import Noperts.Stellated.KernelLoadAff
 import Noperts.Stellated.AtlasProjectiveSolutionTree
 import Noperts.Stellated.CornerCoverage
@@ -231,7 +230,7 @@ set_option Elab.async false
 
 namespace {pre}
 
-stellated_corner_chunk \"{absData}/{tn}.facts.slice3\" 0 0 1 src
+stellated_corner_chunk \"{dataDir}/{tn}.facts.slice3\" 0 0 1 src
 -- data hash {hash factsS} (the loaded file is not tracked by Lake)
 noncomputable abbrev facts : Array CornerCertificate.Row := src.facts.toArray
 noncomputable abbrev fps : Array FactPoly := src.fpolys.toArray
@@ -312,7 +311,7 @@ end {pre}
         let mut dout : Array Nat := #[members.size]
         for c in members do dout := dout ++ #[c.id] ++ frameT c.frame ++ treeT c.tree
         let dataS := ",".intercalate (dout.toList.map toString) ++ ","
-        IO.FS.writeFile s!"{absData}/{tn}.{tag}.rt" dataS
+        IO.FS.writeFile s!"{dataDir}/{tn}.{tag}.rt" dataS
         let thms := members.toList.map fun c => s!"
 theorem {tag}.ok{c.id} (hH : ∀ h f, H.Valid h f → Covered f)
     (hf : ∀ fact ∈ facts, fact.KeyFacts) (hp : FactPolysOk facts fps)
@@ -328,7 +327,7 @@ set_option Elab.async false
 
 namespace {pre}
 
-stellated_rtree_chunks \"{absData}/{tn}.{tag}.rt\" {tag}
+stellated_rtree_chunks \"{dataDir}/{tn}.{tag}.rt\" {tag}
 -- data hash {hash dataS} (the loaded file is not tracked by Lake)
 
 set_option maxRecDepth 100000

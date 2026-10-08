@@ -21,8 +21,9 @@ rev = "v4.34.1"
 [[lean_lib]]
 name = "Noperts"
 
-# Generated kernel-checked corner tables for the stellated tetrahedron
-# (`kernelCorner ktreegen`); build on demand.
+# The generated kernel-only proof (`scripts/gen_kernel.sh`); not a default target: check it
+# with `lake build StellatedKernel`.
+
 [[lean_lib]]
 name = "StellatedKernel"
 globs = ["StellatedKernel.+"]

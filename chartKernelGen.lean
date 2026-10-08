@@ -255,7 +255,6 @@ def main (args : List String) : IO Unit := do
       modules := modules.push cur; cur := #[]; curCost := 0
   if cur.size > 0 then modules := modules.push cur
   IO.println s!"{modules.size} modules"
-  let absOut ← IO.FS.realPath out
   let mut moduleOf : Array ℕ := Array.replicate chunks.size 0
   for k in List.range modules.size do
     let ms := modules[k]!
@@ -280,7 +279,7 @@ set_option Elab.async false
 
 namespace Noperts.Stellated.ChartK
 
-stellated_ctree_chunks \"{absOut}/data/M{k}.ct\" m{k}
+stellated_ctree_chunks \"{out}/data/M{k}.ct\" m{k}
 -- data hash {hash dataS} (the loaded file is not tracked by Lake)
 
 set_option maxRecDepth 100000

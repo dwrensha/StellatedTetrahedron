@@ -46,7 +46,7 @@ The pose space is covered by three kinds of certificate tables:
 
 The certificate packs (about 1.2 GB, 121 MB compressed) are published as the release
 [`data-v1`](https://github.com/dwrensha/StellatedTetrahedron/releases/tag/data-v1) rather than
-checked in; `scripts/fetch_packs.sh` downloads them into `packs/` (using the GitHub CLI) and
+checked in; `scripts/fetch_packs.sh` downloads them into `packs/` and
 verifies their checksums.
 
 ## Two ways to check the certificates
@@ -82,16 +82,26 @@ modules under `StellatedKernel/`:
 | [`kernelCorner`](kernelCorner.lean) `ktreegen` | the 70 integer corner tables |
 | [`cornerAffGen`](cornerAffGen.lean) | the corner tables that need an affine reparametrization |
 
-Each generated module stays within a few GB of memory, so `lake build` can check them all at
-full parallelism. On a 16-core, 94 GB machine the whole kernel proof takes about 105 CPU-hours,
-roughly 7 hours of wall-clock time.
+To generate and check it:
 
-The generated modules and their data (about 230 MB) are not yet part of this repository;
-until they are, `lake build` builds only the `Noperts` library.
+```
+scripts/fetch_packs.sh      # the certificate packs, into packs/
+scripts/gen_kernel.sh       # the generated modules, into StellatedKernel/ (about 1–1.5 hours)
+lake build StellatedKernel  # checks them (about 7 hours)
+```
+
+Each generated module stays within a few GB of memory, so Lake can check them all at full
+parallelism: on a 16-core, 94 GB machine the whole kernel proof takes about 105 CPU-hours,
+roughly 7 hours of wall-clock time. The generated modules are not checked in, and
+`StellatedKernel` is not a default target (plain `lake build` builds only the library). They
+load their data by repo-relative paths, so run `lake build StellatedKernel` from the repository
+root. [`scripts/kernel_corner_tables.tsv`](scripts/kernel_corner_tables.tsv) lists the corner
+tables with their roots and generators, and
+[`scripts/gen_kernel_extra.py`](scripts/gen_kernel_extra.py) writes corner table 49 and the
+final module `StellatedKernel/Main.lean`.
 
 ## Other contents
 
-* [`scripts/`](scripts): the Python certificate search that produced the tables (not needed
-  to check the proof), with a native helper in [`rust/corner-kernel`](rust/corner-kernel).
-* `checkStellatedRows`, `checkCornerPack`, `checkLocalPack`, `stellatedDryRun`, `compact*`,
-  `shareCorner`, `bench*Row`: tools for validating, compacting and profiling the tables.
+`checkStellatedRows`, `checkCornerPack`, `checkLocalPack`, `stellatedDryRun`, `compact*`,
+`shareCorner` and `bench*Row` are tools for validating, compacting and profiling the
+certificate tables.

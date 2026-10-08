@@ -1,0 +1,87 @@
+# table	generator	root	stage
+0	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps false 0)	CornerCoverage.plainStage
+1	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps false 1)	CornerCoverage.plainStage
+2	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps false 2)	CornerCoverage.plainStage
+3	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps false 3)	CornerCoverage.plainStage
+4	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps false 4)	CornerCoverage.plainStage
+5	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps false 5)	CornerCoverage.plainStage
+6	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps false 6)	CornerCoverage.plainStage
+7	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps false 0)	CornerCoverage.coneStage
+8	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps false 1)	CornerCoverage.coneStage
+9	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps false 2)	CornerCoverage.coneStage
+10	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps false 3)	CornerCoverage.coneStage
+11	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps false 4)	CornerCoverage.coneStage
+12	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps false 5)	CornerCoverage.coneStage
+13	int	(CornerHandoff.wedgeRoot AtlasProjectiveSolutionTree.cornerEps false)	CornerCoverage.wedgeStage
+14	int	(CornerHandoff.wtubeRoot AtlasProjectiveSolutionTree.cornerEps false 0)	CornerCoverage.noHandoff
+15	int	(CornerHandoff.wtubeRoot AtlasProjectiveSolutionTree.cornerEps false 1)	CornerCoverage.noHandoff
+16	int	(CornerHandoff.wtubeRoot AtlasProjectiveSolutionTree.cornerEps false 2)	CornerCoverage.noHandoff
+17	int	(CornerHandoff.wtubeRoot AtlasProjectiveSolutionTree.cornerEps false 3)	CornerCoverage.noHandoff
+18	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps true 0)	CornerCoverage.plainStage
+19	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps true 1)	CornerCoverage.plainStage
+20	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps true 2)	CornerCoverage.plainStage
+21	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps true 3)	CornerCoverage.plainStage
+22	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps true 4)	CornerCoverage.plainStage
+23	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps true 5)	CornerCoverage.plainStage
+24	int	(CornerHandoff.plainRoot AtlasProjectiveSolutionTree.cornerEps true 6)	CornerCoverage.plainStage
+25	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps true 0)	CornerCoverage.coneStage
+26	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps true 1)	CornerCoverage.coneStage
+27	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps true 2)	CornerCoverage.coneStage
+28	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps true 3)	CornerCoverage.coneStage
+29	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps true 4)	CornerCoverage.coneStage
+30	int	(CornerHandoff.tubeRoot AtlasProjectiveSolutionTree.cornerEps true 5)	CornerCoverage.coneStage
+31	int	(CornerHandoff.wedgeRoot AtlasProjectiveSolutionTree.cornerEps true)	CornerCoverage.wedgeStage
+32	int	(CornerHandoff.wtubeRoot AtlasProjectiveSolutionTree.cornerEps true 0)	CornerCoverage.noHandoff
+33	int	(CornerHandoff.wtubeRoot AtlasProjectiveSolutionTree.cornerEps true 1)	CornerCoverage.noHandoff
+34	int	(CornerHandoff.wtubeRoot AtlasProjectiveSolutionTree.cornerEps true 2)	CornerCoverage.noHandoff
+35	int	(CornerHandoff.wtubeRoot AtlasProjectiveSolutionTree.cornerEps true 3)	CornerCoverage.noHandoff
+36	int	(CornerHandoff.skewRoot AtlasProjectiveSolutionTree.cornerEps)	CornerCoverage.skewStage
+37	int	(CornerHandoff.zeroRoot AtlasProjectiveSolutionTree.cornerEps 0)	CornerCoverage.noHandoff
+38	int	(CornerHandoff.zeroRoot AtlasProjectiveSolutionTree.cornerEps 1)	CornerCoverage.noHandoff
+39	int	(CornerHandoff.zeroRoot AtlasProjectiveSolutionTree.cornerEps 2)	CornerCoverage.noHandoff
+40	int	(CornerHandoff.zeroRoot AtlasProjectiveSolutionTree.cornerEps 3)	CornerCoverage.noHandoff
+41	int	(CornerHandoff.zeroRoot AtlasProjectiveSolutionTree.cornerEps 4)	CornerCoverage.noHandoff
+42	int	(CornerHandoff.zeroRoot AtlasProjectiveSolutionTree.cornerEps 5)	CornerCoverage.noHandoff
+43	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![false, false, false, false])	CornerCoverage.cpocketStage
+44	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![true, false, false, false])	CornerCoverage.cpocketStage
+45	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![false, true, false, false])	CornerCoverage.cpocketStage
+46	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![true, true, false, false])	CornerCoverage.cpocketStage
+47	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![false, false, true, false])	CornerCoverage.cpocketStage
+48	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![true, false, true, false])	CornerCoverage.cpocketStage
+49	slice	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![false, true, true, false])	CornerCoverage.cpocketStage
+50	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![true, true, true, false])	CornerCoverage.cpocketStage
+51	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![false, false, false, true])	CornerCoverage.cpocketStage
+52	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![true, false, false, true])	CornerCoverage.cpocketStage
+53	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![false, true, false, true])	CornerCoverage.cpocketStage
+54	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![true, true, false, true])	CornerCoverage.cpocketStage
+55	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![false, false, true, true])	CornerCoverage.cpocketStage
+56	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![true, false, true, true])	CornerCoverage.cpocketStage
+57	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![false, true, true, true])	CornerCoverage.cpocketStage
+58	aff	(CornerHandoff.coneRoot AtlasProjectiveSolutionTree.cornerEps ![true, true, true, true])	CornerCoverage.cpocketStage
+59	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 0 0)	CornerCoverage.noHandoff
+60	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 0 1)	CornerCoverage.noHandoff
+61	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 0 2)	CornerCoverage.noHandoff
+62	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 1 0)	CornerCoverage.noHandoff
+63	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 1 1)	CornerCoverage.noHandoff
+64	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 1 2)	CornerCoverage.noHandoff
+65	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 2 0)	CornerCoverage.noHandoff
+66	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 2 1)	CornerCoverage.noHandoff
+67	int	(CornerHandoff.pocketRoot AtlasProjectiveSolutionTree.cornerEps 2 2)	CornerCoverage.noHandoff
+68	int	(CornerHandoff.spocketRoot AtlasProjectiveSolutionTree.cornerEps 0)	CornerCoverage.noHandoff
+69	int	(CornerHandoff.spocketRoot AtlasProjectiveSolutionTree.cornerEps 1)	CornerCoverage.noHandoff
+70	int	(CornerHandoff.spocketRoot AtlasProjectiveSolutionTree.cornerEps 2)	CornerCoverage.noHandoff
+71	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 0 0)	CornerCoverage.noHandoff
+72	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 0 1)	CornerCoverage.noHandoff
+73	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 0 2)	CornerCoverage.noHandoff
+74	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 1 0)	CornerCoverage.noHandoff
+75	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 1 1)	CornerCoverage.noHandoff
+76	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 1 2)	CornerCoverage.noHandoff
+77	int	(CornerHandoff.tpocketRoot AtlasProjectiveSolutionTree.cornerEps 0 0)	CornerCoverage.noHandoff
+78	int	(CornerHandoff.tpocketRoot AtlasProjectiveSolutionTree.cornerEps 0 1)	CornerCoverage.noHandoff
+79	int	(CornerHandoff.tpocketRoot AtlasProjectiveSolutionTree.cornerEps 0 2)	CornerCoverage.noHandoff
+80	int	(CornerHandoff.tpocketRoot AtlasProjectiveSolutionTree.cornerEps 1 0)	CornerCoverage.noHandoff
+81	int	(CornerHandoff.tpocketRoot AtlasProjectiveSolutionTree.cornerEps 1 1)	CornerCoverage.noHandoff
+82	int	(CornerHandoff.tpocketRoot AtlasProjectiveSolutionTree.cornerEps 1 2)	CornerCoverage.noHandoff
+83	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 2 0)	CornerCoverage.noHandoff
+84	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 2 1)	CornerCoverage.noHandoff
+85	int	(CornerHandoff.ppocketRoot AtlasProjectiveSolutionTree.cornerEps 2 2)	CornerCoverage.noHandoff

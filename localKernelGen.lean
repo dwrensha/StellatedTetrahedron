@@ -21,7 +21,6 @@ def main (args : List String) : IO Unit := do
     | [d, o, r, p] => pure (d, o, r.toNat!, p.toNat!)
     | _ => throw (IO.userError "expects DIR OUT ROWS PART")
   IO.FS.createDirAll out
-  let absDir ← IO.FS.realPath dir
   let mut present : Array Nat := #[]
   for idx in List.range 64 do
     let path := s!"{dir}/local-{pad2 idx}.pack"
@@ -47,7 +46,7 @@ set_option Elab.async false
 
 namespace Noperts.Stellated.LocalK
 
-stellated_local_tree \"{absDir}/local-{pad2 idx}.pack\" {idx} {t}
+stellated_local_tree \"{dir}/local-{pad2 idx}.pack\" {idx} {t}
 -- data hash {hash packed} (the loaded file is not tracked by Lake)
 
 noncomputable def {t}.get (i : ℕ) : Row := LocalKernel.Tree8.get {t}.depth {t}.tree i
