@@ -4,12 +4,12 @@
   <img src="assets/stellated-tetrahedron.webp" alt="The 11/20 stellated tetrahedron, rotating" width="400">
 </p>
 
-This project proves, in Lean 4, that the stellated tetrahedron `P_{11/20}`
+This project formally proves that the stellated tetrahedron `P_{11/20}`
 (not to be confused with the [triakis tetrahedon](https://en.wikipedia.org/wiki/Triakis_tetrahedron))
-does not have the [Rupert property](https://en.wikipedia.org/wiki/Prince_Rupert%27s_cube):
-no copy of it fits through a hole in itself.
+does not have the [Rupert property](https://en.wikipedia.org/wiki/Prince_Rupert%27s_cube).
+It other words, it does not fit through itself.
 
-The statement is `¬ IsRupert exactVerts`, where `IsRupert` is the Mathlib-only definition in
+The formal statement is `¬ IsRupert exactVerts`, where `IsRupert` is the Mathlib-only definition in
 [`Noperts/MainTheorem.lean`](Noperts/MainTheorem.lean) and `exactVerts` are the vertices
 defined in [`Noperts/Stellated/Vertices.lean`](Noperts/Stellated/Vertices.lean).
 
