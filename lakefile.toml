@@ -1,0 +1,103 @@
+name = "Noperts"
+defaultTargets = ["Noperts"]
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+relaxedAutoImplicit = false
+weak.linter.style.multiGoal = true
+weak.linter.style.cdot = true
+
+[[require]]
+name = "tryAtEachStep"
+git = "https://github.com/dwrensha/tryAtEachStep"
+rev = "lean-v4.34.1"
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.34.1"
+
+[[lean_lib]]
+name = "Noperts"
+
+# Generated kernel-checked corner tables for the stellated tetrahedron
+# (`kernelCorner ktreegen`); build on demand.
+[[lean_lib]]
+name = "StellatedKernel"
+globs = ["StellatedKernel.+"]
+
+[[lean_exe]]
+name = "constructStellated"
+root = "constructStellated"
+buildType = "release"
+
+[[lean_exe]]
+name = "checkStellatedRows"
+root = "checkStellatedRows"
+buildType = "release"
+
+[[lean_exe]]
+name = "checkCornerPack"
+root = "checkCornerPack"
+buildType = "release"
+
+[[lean_exe]]
+name = "checkLocalPack"
+root = "checkLocalPack"
+buildType = "release"
+
+[[lean_exe]]
+name = "stellatedDryRun"
+root = "stellatedDryRun"
+buildType = "release"
+
+[[lean_exe]]
+name = "shareCorner"
+root = "shareCorner"
+buildType = "release"
+
+[[lean_exe]]
+name = "kernelCorner"
+root = "kernelCorner"
+buildType = "release"
+
+[[lean_exe]]
+name = "compactCorner"
+root = "compactCorner"
+buildType = "release"
+
+[[lean_exe]]
+name = "compactLocal"
+root = "compactLocal"
+buildType = "release"
+
+[[lean_exe]]
+name = "benchChartRow"
+root = "benchChartRow"
+buildType = "release"
+
+[[lean_exe]]
+name = "benchCornerRow"
+root = "benchCornerRow"
+buildType = "release"
+
+[[lean_exe]]
+name = "benchLocalRow"
+root = "benchLocalRow"
+buildType = "release"
+
+[[lean_exe]]
+name = "chartKernelGen"
+root = "chartKernelGen"
+buildType = "release"
+
+[[lean_exe]]
+name = "localKernelGen"
+root = "localKernelGen"
+buildType = "release"
+
+[[lean_exe]]
+name = "cornerAffGen"
+root = "cornerAffGen"
+buildType = "release"
