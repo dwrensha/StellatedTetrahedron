@@ -94,13 +94,15 @@ lake build StellatedKernel  # checks them (about 7 hours)
 
 Each generated module stays within a few GB of memory, so Lake can check them all at full
 parallelism: on a 16-core, 94 GB machine the whole kernel proof takes about 105 CPU-hours,
-roughly 7 hours of wall-clock time. The generated modules are not checked in, and
-`StellatedKernel` is not a default target (plain `lake build` builds only the library). They
-load their data by repo-relative paths, so run `lake build StellatedKernel` from the repository
-root. [`scripts/kernel_corner_tables.tsv`](scripts/kernel_corner_tables.tsv) lists the corner
+roughly 7 hours of wall-clock time. The generated modules (everything in `StellatedKernel/`
+except `Main.lean`) are not checked in, and `StellatedKernel` is not a default target (plain
+`lake build` builds only the library). They load their data by repo-relative paths, so run
+`lake build StellatedKernel` from the repository root.
+[`scripts/kernel_corner_tables.tsv`](scripts/kernel_corner_tables.tsv) lists the corner
 tables with their roots and generators, and
-[`scripts/gen_kernel_extra.py`](scripts/gen_kernel_extra.py) writes corner table 49 and the
-final module `StellatedKernel/Main.lean`.
+[`scripts/gen_kernel_extra.py`](scripts/gen_kernel_extra.py) writes corner table 49. The final
+module [`StellatedKernel/Main.lean`](StellatedKernel/Main.lean), which states
+`stellated_not_rupert_kernel` and assigns each corner case to its table, is checked in.
 
 ## Other contents
 

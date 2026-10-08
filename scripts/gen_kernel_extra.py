@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-"""Write the hand-shaped parts of the generated kernel proof (run by gen_kernel.sh):
+"""Write corner table 49 of the generated kernel proof (run by gen_kernel.sh):
 
 * `StellatedKernel/T49/*`: corner table 49 (nine nodes on the specification path), split into
   one module per row so that each `decide +kernel` gets a fresh kernel cache;
-* `StellatedKernel/Main.lean`: the final theorem, covering every corner case with the
-  corresponding table.
 
 Table 49's data file `StellatedKernel/data/corner/T49.slice3` comes from
 `kernelCorner slice`.
@@ -95,69 +93,4 @@ theorem table_covered (hH : ∀ h f, H.Valid h f → Covered f) : Covered {root4
 
 end {ns}
 ''')
-
-# --- Main -------------------------------------------------------------------------------------
-T = lambda i: f'KernelCorner.T{i}.table_covered hH'
-def cases2(n1, n2, f):
-    return '\n'.join(f'    · exact {T(f(a, b))}' for a in range(n1) for b in range(n2))
-imp = ['import StellatedKernel.Chart.Assembly', 'import StellatedKernel.Local.Assembly',
-       'import Noperts.Stellated.IsNotRupert'] + [f'import StellatedKernel.T{i}.Table' for i in sorted(tables)]
-nl = '\n'
-body = f'''
-open Noperts.Stellated Noperts.Stellated.CornerTree Noperts.Stellated.CornerCoverage
-open Noperts.Stellated.AtlasProjectiveSolutionTree
-
-set_option Elab.async false
-
-namespace Noperts.Stellated
-
-set_option maxRecDepth 100000
-set_option maxHeartbeats 0
-
-/-- Every corner case is covered: each field is discharged by its corner table. -/
-theorem kernel_cov : Cov cornerEps where
-  tpocket face m hH := by
-    fin_cases face <;> fin_cases m
-{cases2(2, 3, lambda f, m: 77 + 3 * f + m)}
-  ppocket k m hH := by
-    fin_cases k <;> fin_cases m
-{cases2(3, 3, lambda k, m: (71 + 3 * k if k < 2 else 83) + m)}
-  spocket m hH := by
-    fin_cases m
-{cases2(1, 3, lambda _, m: 68 + m)}
-  pocket k m hH := by
-    fin_cases k <;> fin_cases m
-{cases2(3, 3, lambda k, m: 59 + 3 * k + m)}
-  cone neg hH := by
-    have e : neg = ![neg 0, neg 1, neg 2, neg 3] := by funext i; fin_cases i <;> rfl
-    rw [e]
-    generalize neg 0 = a; generalize neg 1 = b; generalize neg 2 = c; generalize neg 3 = d
-    cases a <;> cases b <;> cases c <;> cases d
-{nl.join(f"    · exact {T(43 + a + 2 * b + 4 * c + 8 * d)}" for a in range(2) for b in range(2) for c in range(2) for d in range(2))}
-  tube seg face hH := by
-    cases seg <;> fin_cases face
-{nl.join(f"    · exact {T((18 if s else 0) + 7 + f)}" for s in range(2) for f in range(6))}
-  wtube seg face hH := by
-    cases seg <;> fin_cases face
-{nl.join(f"    · exact {T((18 if s else 0) + 14 + f)}" for s in range(2) for f in range(4))}
-  wedge seg hH := by
-    cases seg
-{nl.join(f"    · exact {T((18 if s else 0) + 13)}" for s in range(2))}
-  skew hH := {T(36)}
-  zero face hH := by
-    fin_cases face
-{nl.join(f"    · exact {T(37 + f)}" for f in range(6))}
-  plain seg face hH := by
-    cases seg <;> fin_cases face
-{nl.join(f"    · exact {T((18 if s else 0) + f)}" for s in range(2) for f in range(7))}
-
-theorem kernel_cornerCovered : CornerCovered := kernel_cov.covered
-
-/-- The 11/20 stellated tetrahedron is not Rupert: every step checked by the kernel. -/
-theorem stellated_not_rupert_kernel : ¬ IsRupert exactVerts :=
-  not_rupert_of_root (ChartK.chart_root LocalK.headers_covered kernel_cornerCovered)
-
-end Noperts.Stellated
-'''
-open('StellatedKernel/Main.lean', 'w').write('\n'.join(imp) + '\n' + body)
-print('wrote StellatedKernel/T49 and StellatedKernel/Main.lean')
+print('wrote StellatedKernel/T49')

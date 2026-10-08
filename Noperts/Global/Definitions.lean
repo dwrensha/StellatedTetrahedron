@@ -10,7 +10,6 @@ public import Noperts.PoseInterval
 public import Noperts.Basic
 public import Noperts.Bounding.SmallConsecutiveRotations
 public import Noperts.Bounding.OpNorm
-public import Noperts.Vertices.Index
 
 @[expose] public section
 

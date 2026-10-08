@@ -12,7 +12,8 @@ P=${1:-packs}
 
 lake build chartKernelGen localKernelGen kernelCorner cornerAffGen
 bin=.lake/build/bin
-rm -rf StellatedKernel
+# everything except the checked-in final module Main.lean is generated
+find StellatedKernel -mindepth 1 -maxdepth 1 ! -name Main.lean -exec rm -rf {} + 2>/dev/null || true
 mkdir -p StellatedKernel/data/corner StellatedKernel/logs
 log=StellatedKernel/logs
 

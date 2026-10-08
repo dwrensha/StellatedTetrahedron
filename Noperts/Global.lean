@@ -13,7 +13,6 @@ public import Noperts.Global.RotationPartials.SecondPartialInner
 public import Noperts.Basic
 public import Noperts.Bounding.SmallConsecutiveRotations
 public import Noperts.Bounding.OpNorm
-public import Noperts.Vertices.Index
 
 @[expose] public section
 

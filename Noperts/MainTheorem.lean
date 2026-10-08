@@ -3,8 +3,8 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
-This file states our main theorem using only Mathlib imports, following the conventions
-proposed on Zulip here:
+This file defines the Rupert property, in which our main theorem is stated, using only
+Mathlib imports, following the conventions proposed on Zulip here:
 https://leanprover.zulipchat.com/#narrow/channel/219941-Machine-Learning-for-Theorem-Proving/topic/Discussion.3A.20AI-written.20mathematical.20proofs/near/556956066
 
 See also the Formal Conjectures version of the theorem statement:
@@ -26,14 +26,5 @@ def IsRupert (vertices : Finset (EuclideanSpace ℝ (Fin 3))) : Prop :=
    let inner_shadow := { inner_offset + proj_xy (inner_rotation.toEuclideanLin p) | p ∈ hull }
    let outer_shadow := { proj_xy (outer_rotation.toEuclideanLin p) | p ∈ hull }
    inner_shadow ⊆ interior outer_shadow
-
-/--
-The main result we want to prove: there exists a convex polyhedron (represented as
-a finite set of vertices) that does not have the Rupert Property.
--/
-def ExistsNonRupertPolyhedron : Prop :=
-  ∃ vs : Finset (EuclideanSpace ℝ (Fin 3)),
-    (interior (convexHull ℝ vs : Set (EuclideanSpace ℝ (Fin 3)))).Nonempty ∧
-    ¬IsRupert vs
 
 end

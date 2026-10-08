@@ -50,7 +50,6 @@ import Noperts.Rupert.Equivalences.Util
 import Noperts.Rupert.Set
 import Noperts.RationalRotation
 import Noperts.Util
-import Noperts.Vertices.Index
 import Noperts.Stellated.Approximation
 import Noperts.Stellated.AtlasEdgeCertificate
 import Noperts.Stellated.AtlasInterval
