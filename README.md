@@ -5,12 +5,11 @@
 </p>
 
 This project formally proves that the 11/20 stellated tetrahedron
-(not to be confused with the 3/5 stellated tetrahedron,
-also known as the [triakis tetrahedon](https://en.wikipedia.org/wiki/Triakis_tetrahedron))
 does not have the [Rupert property](https://en.wikipedia.org/wiki/Prince_Rupert%27s_cube).
-
 This polyhedron was [suggested by Tony Zeng](https://arxiv.org/pdf/2604.26531) as a candidate
 for the simplest possible such "Nopert".
+(It is not to be confused with the [triakis tetrahedon](https://en.wikipedia.org/wiki/Triakis_tetrahedron),
+which can alternately be referred to as the "3/5 stellated tetrahedron".)
 
 Our main formal assertion is `¬ IsRupert exactVerts`, where `IsRupert` is the Mathlib-only definition in
 [`Noperts/MainTheorem.lean`](Noperts/MainTheorem.lean) and `exactVerts` are the vertices
