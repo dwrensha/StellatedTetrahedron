@@ -11,13 +11,33 @@ does not have the [Rupert property](https://en.wikipedia.org/wiki/Prince_Rupert%
 This polyhedron was [suggested by Tony Zeng](https://arxiv.org/pdf/2604.26531) as a candidate
 for the simplest possible such "Nopert".
 
-The main formal statement is `¬ IsRupert exactVerts`, where `IsRupert` is the Mathlib-only definition in
+Our main formal assertion is `¬ IsRupert exactVerts`, where `IsRupert` is the Mathlib-only definition in
 [`Noperts/MainTheorem.lean`](Noperts/MainTheorem.lean) and `exactVerts` are the vertices
 defined in [`Noperts/Stellated/Vertices.lean`](Noperts/Stellated/Vertices.lean).
 
 This project grew out of the
 [Noperthedron formalization](https://github.com/jcreedcmu/Noperthedron), and shares some of
 its infrastructure.
+
+## Structure of the proof
+
+Our strategy is to subdivide the configuration space into many small regions
+and then to prove that no Rupert passage exists for any of them.
+The soundness of this strategy is formalized as `not_rupert_of_valid_table`
+in [`IsNotRupert.lean`](Noperts/Stellated/IsNotRupert.lean).
+
+The data of the subdivision lives in "pack" files (totalling about 1.2 GB, 121 MB compressed),
+published as the release [`data-v1`](https://github.com/dwrensha/StellatedTetrahedron/releases/tag/data-v1);
+`scripts/fetch_packs.sh` downloads them into `packs/` and verifies their checksums.
+
+There are three different kinds of table holding the data.
+
+* a chart table (`chart0.pack`): projective edge-cycle and balanced-triple certificates over
+  a Cayley atlas of rotations;
+* local tables (`local-NN.pack`): neighbourhoods of the symmetric poses;
+* corner tables (`corner-*.pack`): blow-up coordinates around the corner views where the
+  shadows touch at vertices.
+
 
 ## Getting started
 
@@ -31,25 +51,6 @@ lake build
 Run `lake exe cache get` first: it downloads prebuilt Mathlib, which `lake build` would
 otherwise compile from source (several hours).
 
-## Structure of the proof
-
-The definitions and the reduction to finitely many certificate checks live in
-[`Noperts/Stellated/`](Noperts/Stellated). The bridge to the public statement is in
-[`IsNotRupert.lean`](Noperts/Stellated/IsNotRupert.lean): `not_rupert_of_valid_table` (from a
-valid certificate table) and `not_rupert_of_root` (from exclusion of the whole root box).
-
-The pose space is covered by three kinds of certificate tables:
-
-* a chart table (`chart0.pack`): projective edge-cycle and balanced-triple certificates over
-  a Cayley atlas of rotations;
-* local tables (`local-NN.pack`): neighbourhoods of the symmetric poses;
-* corner tables (`corner-*.pack`): blow-up coordinates around the corner views where the
-  shadows touch at vertices.
-
-The certificate packs (about 1.2 GB, 121 MB compressed) are published as the release
-[`data-v1`](https://github.com/dwrensha/StellatedTetrahedron/releases/tag/data-v1) rather than
-checked in; `scripts/fetch_packs.sh` downloads them into `packs/` and
-verifies their checksums.
 
 ## Two ways to check the certificates
 
@@ -94,15 +95,13 @@ lake build StellatedKernel  # checks them (about 7 hours)
 
 Each generated module stays within a few GB of memory, so Lake can check them all at full
 parallelism: on a 16-core, 94 GB machine the whole kernel proof takes about 105 CPU-hours,
-roughly 7 hours of wall-clock time. The generated modules (everything in `StellatedKernel/`
-except `Main.lean`) are not checked in, and `StellatedKernel` is not a default target (plain
-`lake build` builds only the library). They load their data by repo-relative paths, so run
-`lake build StellatedKernel` from the repository root.
-[`scripts/kernel_corner_tables.tsv`](scripts/kernel_corner_tables.tsv) lists the corner
+roughly 7 hours of wall-clock time. The generated modules are not checked in, and
+`StellatedKernel` is not a default target (plain `lake build` builds only the library). They
+load their data by repo-relative paths, so run `lake build StellatedKernel` from the repository
+root. [`scripts/kernel_corner_tables.tsv`](scripts/kernel_corner_tables.tsv) lists the corner
 tables with their roots and generators, and
-[`scripts/gen_kernel_extra.py`](scripts/gen_kernel_extra.py) writes corner table 49. The final
-module [`StellatedKernel/Main.lean`](StellatedKernel/Main.lean), which states
-`stellated_not_rupert_kernel` and assigns each corner case to its table, is checked in.
+[`scripts/gen_kernel_extra.py`](scripts/gen_kernel_extra.py) writes corner table 49 and the
+final module `StellatedKernel/Main.lean`.
 
 ## Other contents
 
