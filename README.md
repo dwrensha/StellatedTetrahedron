@@ -7,9 +7,11 @@
 This project formally proves that the stellated tetrahedron `P_{11/20}`
 (not to be confused with the [triakis tetrahedon](https://en.wikipedia.org/wiki/Triakis_tetrahedron))
 does not have the [Rupert property](https://en.wikipedia.org/wiki/Prince_Rupert%27s_cube).
-It other words, it does not fit through itself.
 
-The formal statement is `¬ IsRupert exactVerts`, where `IsRupert` is the Mathlib-only definition in
+This polyhedron was [suggested by Tony Zeng](https://arxiv.org/pdf/2604.26531) as a candidate
+for the simplest possible such "Nopert".
+
+The main formal statement is `¬ IsRupert exactVerts`, where `IsRupert` is the Mathlib-only definition in
 [`Noperts/MainTheorem.lean`](Noperts/MainTheorem.lean) and `exactVerts` are the vertices
 defined in [`Noperts/Stellated/Vertices.lean`](Noperts/Stellated/Vertices.lean).
 
