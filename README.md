@@ -17,6 +17,18 @@ This project grew out of the
 [Noperthedron formalization](https://github.com/jcreedcmu/Noperthedron), and shares some of
 its infrastructure.
 
+## Getting started
+
+[Install Lean](https://lean-lang.org/install/manual/), clone this project, then:
+
+```
+lake exe cache get
+lake build
+```
+
+Run `lake exe cache get` first: it downloads prebuilt Mathlib, which `lake build` would
+otherwise compile from source (several hours).
+
 ## Structure of the proof
 
 The definitions and the reduction to finitely many certificate checks live in
@@ -83,12 +95,3 @@ until they are, `lake build` builds only the `Noperts` library.
   to check the proof), with a native helper in [`rust/corner-kernel`](rust/corner-kernel).
 * `checkStellatedRows`, `checkCornerPack`, `checkLocalPack`, `stellatedDryRun`, `compact*`,
   `shareCorner`, `bench*Row`: tools for validating, compacting and profiling the tables.
-
-## Getting started
-
-[Install Lean](https://lean-lang.org/install/manual/), clone this project, then:
-
-```
-lake exe cache get
-lake build
-```
