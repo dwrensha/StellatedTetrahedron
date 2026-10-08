@@ -4,11 +4,7 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 This file defines the Rupert property, in which our main theorem is stated, using only
-Mathlib imports, following the conventions proposed on Zulip here:
-https://leanprover.zulipchat.com/#narrow/channel/219941-Machine-Learning-for-Theorem-Proving/topic/Discussion.3A.20AI-written.20mathematical.20proofs/near/556956066
-
-See also the Formal Conjectures version of the theorem statement:
-https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/Paper/Rupert.lean
+Mathlib imports.
 -/
 
 @[expose] public section

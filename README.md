@@ -4,8 +4,9 @@
   <img src="assets/stellated-tetrahedron.webp" alt="The 11/20 stellated tetrahedron, rotating" width="400">
 </p>
 
-This project formally proves that the stellated tetrahedron `P_{11/20}`
-(not to be confused with the [triakis tetrahedon](https://en.wikipedia.org/wiki/Triakis_tetrahedron))
+This project formally proves that the 11/20 stellated tetrahedron
+(not to be confused with the 3/5 stellated tetrahedron,
+also known as the [triakis tetrahedon](https://en.wikipedia.org/wiki/Triakis_tetrahedron))
 does not have the [Rupert property](https://en.wikipedia.org/wiki/Prince_Rupert%27s_cube).
 
 This polyhedron was [suggested by Tony Zeng](https://arxiv.org/pdf/2604.26531) as a candidate
