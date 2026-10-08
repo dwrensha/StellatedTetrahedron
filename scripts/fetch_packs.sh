@@ -5,9 +5,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 tag=${1:-data-v1}
+url=https://github.com/dwrensha/StellatedTetrahedron/releases/download/$tag/stellated-packs.tar.gz
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
-gh release download "$tag" -R dwrensha/StellatedTetrahedron -p stellated-packs.tar.gz -D "$tmp"
+curl -fL --retry 3 -o "$tmp/stellated-packs.tar.gz" "$url"
 tar xzf "$tmp/stellated-packs.tar.gz" -C "$tmp"
 (cd "$tmp/stellated-packs" && sha256sum --quiet -c SHA256SUMS)
 rm -rf packs
