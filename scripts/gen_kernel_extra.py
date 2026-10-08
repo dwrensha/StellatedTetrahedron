@@ -107,6 +107,8 @@ body = f'''
 open Noperts.Stellated Noperts.Stellated.CornerTree Noperts.Stellated.CornerCoverage
 open Noperts.Stellated.AtlasProjectiveSolutionTree
 
+set_option Elab.async false
+
 namespace Noperts.Stellated
 
 set_option maxRecDepth 100000

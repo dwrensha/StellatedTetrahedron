@@ -242,7 +242,7 @@ end {pre}
       let nf := st.facts.size
       let fgroups := (nf + 9) / 10
       for fg in List.range fgroups do
-        let mut src := s!"import StellatedKernel.{tn}.Facts\n\nopen Noperts.Stellated Noperts.Stellated.CornerTree Noperts.Stellated.CornerKernel\n\nnamespace {pre}\n\nset_option maxRecDepth 100000\nset_option maxHeartbeats 0\n"
+        let mut src := s!"import StellatedKernel.{tn}.Facts\n\nopen Noperts.Stellated Noperts.Stellated.CornerTree Noperts.Stellated.CornerKernel\n\nset_option Elab.async false\n\nnamespace {pre}\n\nset_option maxRecDepth 100000\nset_option maxHeartbeats 0\n"
         for k in List.range (min 10 (nf - 10 * fg)) do
           let i := 10 * fg + k
           src := src ++ s!"\ntheorem fact{i} : ∀ h : {i} < facts.size, (facts[{i}]'h).KeyFacts := by decide +kernel\n\ntheorem fpoly{i} : ∀ h : {i} < fps.size, FactPolyAt facts fps ⟨{i}, h⟩ := by decide +kernel\n"
