@@ -52,7 +52,7 @@ Run `lake exe cache get` first: it downloads prebuilt Mathlib, which `lake build
 otherwise compile from source (several hours).
 
 
-## Two ways to check the certificates
+## Levels of trust
 
 ### Native proof
 
