@@ -32,7 +32,10 @@ The pose space is covered by three kinds of certificate tables:
 * corner tables (`corner-*.pack`): blow-up coordinates around the corner views where the
   shadows touch at vertices.
 
-The certificate packs (about 750 MB) are not yet part of this repository.
+The certificate packs (about 1.2 GB, 121 MB compressed) are published as the release
+[`data-v1`](https://github.com/dwrensha/StellatedTetrahedron/releases/tag/data-v1) rather than
+checked in; `scripts/fetch_packs.sh` downloads them into `packs/` (using the GitHub CLI) and
+verifies their checksums.
 
 ## Two ways to check the certificates
 
@@ -42,12 +45,12 @@ The certificate packs (about 750 MB) are not yet part of this repository.
 compiled code (trusting the Lean compiler, as `native_decide` does) and constructs the proof:
 
 ```
+scripts/fetch_packs.sh
 lake build constructStellated
-.lake/build/bin/constructStellated DIR
+.lake/build/bin/constructStellated packs
 ```
 
-where `DIR` contains `chart0.pack`, `corner-v2.pack` and the `local-NN.pack` files. On a
-16-core machine this takes about 35 minutes (about 8 CPU-hours).
+On a 16-core machine this takes about 35 minutes (about 8 CPU-hours).
 
 ### Kernel-only proof
 
