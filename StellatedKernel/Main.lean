@@ -1,3 +1,17 @@
+/-
+The final module of the kernel-only proof that the 11/20 stellated tetrahedron is not Rupert.
+
+This is the only checked-in file under `StellatedKernel/`; every module it imports is generated
+from the certificate packs and is not in the repository. To produce and check them, run from the
+repository root:
+
+    scripts/fetch_packs.sh      # the certificate packs, into packs/
+    scripts/gen_kernel.sh       # the generated modules, into StellatedKernel/
+    lake build StellatedKernel  # checks everything (several hours; see README.md)
+
+Every certificate here is checked by `decide +kernel`, so the proof does not depend on
+`Lean.ofReduceBool` or compiled code; the `#print axioms` at the end confirms this.
+-/
 import StellatedKernel.Chart.Assembly
 import StellatedKernel.Local.Assembly
 import Noperts.Stellated.IsNotRupert
@@ -217,3 +231,5 @@ theorem stellated_not_rupert_kernel : ¬ IsRupert exactVerts :=
   not_rupert_of_root (ChartK.chart_root LocalK.headers_covered kernel_cornerCovered)
 
 end Noperts.Stellated
+
+#print axioms Noperts.Stellated.stellated_not_rupert_kernel
