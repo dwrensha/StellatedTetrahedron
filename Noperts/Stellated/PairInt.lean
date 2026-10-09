@@ -36,7 +36,8 @@ def sz (a : Z) : ℕ := Nat.add a.1 a.2
 
 @[simp] theorem toZ_mk0 (n : ℕ) : toZ (n, 0) = n := by simp [toZ]
 @[simp] theorem toZ_ofI (z : ℤ) : toZ (ofI z) = z := by
-  cases z <;> simp [toZ, ofI] <;> omega
+  cases z <;> simp [toZ, ofI]
+  omega
 @[simp] theorem toZ_add (a b : Z) : toZ (add a b) = toZ a + toZ b := by
   simp only [toZ, add, Nat.add_eq]; push_cast; ring
 @[simp] theorem toZ_sub (a b : Z) : toZ (sub a b) = toZ a - toZ b := by

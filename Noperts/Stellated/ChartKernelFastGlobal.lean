@@ -38,11 +38,11 @@ def sz3 (a : V3Z) : ℕ := Nat.add (Nat.add (sz a.x) (sz a.y)) (sz a.z)
 
 @[simp] theorem toV3_ofV3 (a : V3) : toV3 (ofV3 a) = a := by simp [toV3, ofV3]
 theorem toZ_dot (a b : V3Z) : toZ (dot a b) = V3.dot a.toV3 b.toV3 := by
-  simp [dot, V3.dot, toV3, LocalKernel.int_add_eq, LocalKernel.int_mul_eq]
+  simp [dot, V3.dot, toV3]
 theorem toV3_cross (a b : V3Z) : (cross a b).toV3 = V3.cross a.toV3 b.toV3 := by
-  simp [cross, V3.cross, toV3, LocalKernel.int_sub_eq, LocalKernel.int_mul_eq]
+  simp [cross, V3.cross, toV3, LocalKernel.int_sub_eq]
 theorem toV3_vadd (a b : V3Z) : (vadd a b).toV3 = V3.add a.toV3 b.toV3 := by
-  simp [vadd, V3.add, toV3, LocalKernel.int_add_eq]
+  simp [vadd, V3.add, toV3]
 
 end V3Z
 
@@ -59,7 +59,8 @@ theorem toZ_qS (L : ℕ) (q : ℚ) : toZ (qS L q) = qScale L q := by
   have hd : Nat.div L q.den = L / q.den := rfl
   rw [hd]
   generalize L / q.den = m
-  cases h : q.num <;> simp [ZP.toZ, Nat.mul_eq, Int.negSucc_eq] <;> push_cast <;> ring
+  cases h : q.num <;> simp [ZP.toZ, Nat.mul_eq, Int.negSucc_eq]
+  ring
 
 /-- Row `a` of the scaled view triangle. -/
 def rowZ (L : ℕ) (tri : Triangle ℚ) (a : Fin 3) : V3Z := ⟨qS L (tri a 0), qS L (tri a 1), qS L (tri a 2)⟩

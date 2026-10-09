@@ -252,7 +252,7 @@ theorem parity_eq (b : Bool) (e : ℕ) :
     cond b (Nat.beq (Nat.mod e 2) 1) false = (b && e % 2 == 1) := by
   cases b
   · rfl
-  · simp only [cond_true, Bool.true_and]
+  · simp only [Bool.cond_true, Bool.true_and]
     rw [Bool.eq_iff_iff, beq_iff_eq, Nat.beq_eq]; rfl
 
 theorem walkW_eq (ax up wp wm : List ℕ) (sgB : List Bool) (m : Mono) :
@@ -267,7 +267,7 @@ theorem walkW_eq (ax up wp wm : List ℕ) (sgB : List Bool) (m : Mono) :
       · subst he; rfl
       · have : Nat.beq e 0 = false := by
           rw [Bool.eq_false_iff]; intro h; exact he (Nat.eq_of_beq_eq_true h)
-        rw [this, if_neg he]
+        rw [this]; simp only [he, ↓reduceIte]
         simp only [Bool.cond_false, W5.toP, xorB_eq, parity_eq]
         rfl
 

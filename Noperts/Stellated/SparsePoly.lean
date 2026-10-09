@@ -169,13 +169,13 @@ theorem trim_spec (m : Mono) :
       obtain ⟨k, hk⟩ := ih
       rw [trim_cons]
       cases ha : Nat.beq a 0 <;> cases hr : (trim m).isEmpty
-      · exact ⟨k, by simp only [Bool.false_and, cond_false, List.cons_append]; rw [← hk]⟩
-      · exact ⟨k, by simp only [Bool.false_and, cond_false, List.cons_append]; rw [← hk]⟩
-      · exact ⟨k, by simp only [Bool.true_and, Bool.false_eq_true, cond_false, List.cons_append]; rw [← hk]⟩
+      · exact ⟨k, by simp only [Bool.false_and, Bool.cond_false, List.cons_append]; rw [← hk]⟩
+      · exact ⟨k, by simp only [Bool.false_and, Bool.cond_false, List.cons_append]; rw [← hk]⟩
+      · exact ⟨k, by simp only [Bool.true_and, Bool.cond_false, List.cons_append]; rw [← hk]⟩
       · have h0 : a = 0 := Nat.eq_of_beq_eq_true ha
         have he : trim m = [] := List.isEmpty_iff.mp hr
         refine ⟨k + 1, ?_⟩
-        simp only [Bool.and_self, cond_true, List.nil_append, List.replicate_succ, h0]
+        simp only [Bool.and_self, Bool.cond_true, List.nil_append, List.replicate_succ, h0]
         rw [hk, he]; simp
 
 theorem monoEval_trim (x : ℕ → ℝ) (m : Mono) :

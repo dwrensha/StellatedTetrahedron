@@ -101,7 +101,7 @@ theorem zipIdxR_getD (g : ℕ → ℤ → ℤ → ℤ) (xs : List ℤ) : ∀ (k 
       rw [zipIdxR_cons]
       cases i with
       | zero =>
-          simp only [List.getD_cons_zero, List.length_cons, Nat.zero_lt_succ, if_true, Nat.add_zero]
+          simp only [List.getD_cons_zero, List.length_cons, Nat.zero_lt_succ, ite_true, Nat.add_zero]
           cases hs <;> rfl
       | succ i =>
           rw [List.getD_cons_succ, ih]
@@ -253,14 +253,14 @@ theorem IFrame.child_X (upper : Bool) (i : ℕ) : (f.child v M s upper).X.getD i
       else 2 * s * f.X.getD i 0) else 0 := by
   simp only [IFrame.child, zipIdxR_getD, IFrame.childA, IFrame.childB, Nat.zero_add,
     int_add_eq', int_sub_eq', int_mul_eq']
-  push_cast; rfl
+  rfl
 
 theorem IFrame.child_H (upper : Bool) (i : ℕ) : (f.child v M s upper).H.getD i 0 =
     if i < f.X.length then (if i = v then f.childB v M s upper - f.childA v M s upper
       else 2 * s * f.H.getD i 0) else 0 := by
   simp only [IFrame.child, zipIdxR_getD, IFrame.childA, IFrame.childB, Nat.zero_add,
     int_add_eq', int_sub_eq', int_mul_eq']
-  push_cast; rfl
+  rfl
 
 theorem abs_sub_le_iff' (y c r : ℝ) : |y - c| ≤ r ↔ c - r ≤ y ∧ y ≤ c + r := by
   rw [abs_le]; constructor <;> rintro ⟨h1, h2⟩ <;> constructor <;> linarith

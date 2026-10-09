@@ -26,7 +26,7 @@ namespace V3P
 def of (a : V3) : V3P := ⟨ofI a.x, ofI a.y, ofI a.z⟩
 def dot (a b : V3P) : Z := add (add (mul a.x b.x) (mul a.y b.y)) (mul a.z b.z)
 theorem toZ_dot (a b : V3) : toZ (dot (of a) (of b)) = V3.dot a b := by
-  simp [dot, of, V3.dot, int_add_eq, int_mul_eq]
+  simp [dot, of, V3.dot]
 end V3P
 
 /-- `max` on pairs. -/
@@ -88,7 +88,7 @@ theorem crossLiftZ_eq (s e : V3) (c : Fin 3) :
     (let r := crossLiftZ (V3P.of s) (V3P.of e) c; (⟨toZ r.x, toZ r.y, toZ r.z⟩ : V3)) =
       crossLiftN s e c := by
   fin_cases c <;>
-    simp [crossLiftZ, crossLiftN, V3P.of, V3.sub, V3.smul, int_sub_eq, int_mul_eq] <;> ring_nf
+    simp [crossLiftZ, crossLiftN, V3P.of, V3.sub, V3.smul, int_sub_eq]
 
 structure BoxP where
   mx : Z
@@ -118,7 +118,8 @@ theorem ballZ_eq (q : Q6P) (b : BoxN) :
     (toZ (ballZ q (BoxP.of b)).1, toZ (ballZ q (BoxP.of b)).2) = ballN q.toQ6 b := by
   simp only [ballZ, ballN, Q6P.toQ6, BoxP.of, toZ_add, toZ_mul, toZ_nmul, toZ_absZ, toZ_ofI,
     Prod.mk.injEq]
-  constructor <;> push_cast <;> ring
+  constructor <;> push_cast
+  ring
 
 def axisZ (box : Box) (L : Int) (t0 t1 t2 : V3) (bn : BoxN) (j : Fin 4) : AxisOut :=
   let cert := box.certificate j
