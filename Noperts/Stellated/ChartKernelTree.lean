@@ -5,6 +5,9 @@ public import Noperts.Stellated.ChartKernelEdgeSound
 public import Noperts.Stellated.ChartKernelGlobalSound
 public import Noperts.Stellated.ChartKernelMixedSound
 public import Noperts.Stellated.LocalKernelSound
+public import Noperts.Stellated.ChartKernelFastEdge
+public import Noperts.Stellated.ChartKernelFastMixed
+public import Noperts.Stellated.LocalKernelFast
 
 @[expose] public section
 
@@ -80,11 +83,30 @@ inductive Step where
   | view (k : Fin 4)
   | cut (weights : Fin 3 → ℚ) (k : Fin 3)
 
+/-- The triangle with rows `a, b, c`. -/
+def tri3K (a b c : Noperts.ProjectiveView.Vector ℚ) : Noperts.ProjectiveView.Triangle ℚ :=
+  fun i => match i with | 0 => a | 1 => b | 2 => c
+
+/-- `split tri k`, with the children's rows from shared midpoints (no `![…]` lookups). -/
+def splitK (t : Noperts.ProjectiveView.Triangle ℚ) (k : Fin 4) : Noperts.ProjectiveView.Triangle ℚ :=
+  let m01 := Noperts.ProjectiveView.midpoint (t 0) (t 1)
+  let m02 := Noperts.ProjectiveView.midpoint (t 0) (t 2)
+  let m12 := Noperts.ProjectiveView.midpoint (t 1) (t 2)
+  match k with
+  | 0 => tri3K (t 0) m01 m02
+  | 1 => tri3K m01 (t 1) m12
+  | 2 => tri3K m02 m12 (t 2)
+  | 3 => tri3K m01 m12 (Noperts.ProjectiveView.midpoint (t 2) (t 0))
+
+theorem splitK_eq (t : Noperts.ProjectiveView.Triangle ℚ) (k : Fin 4) : splitK t k = split t k := by
+  funext i
+  fin_cases k <;> fin_cases i <;> rfl
+
 def Step.apply : Step → Interval × Region → Interval × Region
   | .half c false, (iv, reg) => (iv.lowerHalf c, reg)
   | .half c true, (iv, reg) => (iv.upperHalf c, reg)
   | .root, (iv, _) => (iv, .triangle 0 chamberTriangle)
-  | .view k, (iv, .triangle r t) => (iv, .triangle r (split t k))
+  | .view k, (iv, .triangle r t) => (iv, .triangle r (splitK t k))
   | .cut w k, (iv, .triangle r t) =>
       (iv, .triangle r (AtlasProjectiveLocalViewTree.cutTriangle t w k))
   | _, f => f
@@ -149,11 +171,14 @@ def cutChild (k : Fin 3) (c0 c1 c2 : CTree) : CTree :=
 /-- The leaf condition at a triangle region. -/
 def leafOk (hdr : Fin 64 → Option Header) (ch : ChartIndex) (iv : Interval) (root : Fin 8)
     (tri : Triangle) : CTree → Bool
-  | .projective e h => ChartKernel.validEdgeK (e.box iv root tri ch) h
-  | .global g h => ChartKernelG.validGlobalK (g.box iv root tri ch) h
-  | .mixed m h => ChartKernelM.validMixedK (m.box iv root tri ch) h
+  | .projective e h => ChartKernelF.edgeZ (e.box iv root tri ch)
+      (e.box ChartKernelF.iv₀ 0 chamberTriangle ch) h
+  | .global g h => ChartKernelF.globalZ (g.box iv root tri ch)
+      (g.box ChartKernelF.iv₀ 0 chamberTriangle ch) h
+  | .mixed m h => ChartKernelF.mixedZ (m.box iv root tri ch)
+      (m.box ChartKernelF.iv₀ 0 chamberTriangle ch) h
   | .projectiveLocal l =>
-      LocalKernel.viewValidN (l.box iv root tri ch) &&
+      LocalKernel.viewValidZ (l.box iv root tri ch) &&
         decide ((l.box iv root tri ch).mismatchRadius ≤ (l.box iv root tri ch).r)
   | .tube s r idx within =>
       match hdr idx with
@@ -171,10 +196,10 @@ def CTree.check (hdr : Fin 64 → Option Header) (ch : ChartIndex) :
       CTree.check hdr ch (iv.lowerHalf c) reg lo && CTree.check hdr ch (iv.upperHalf c) reg hi
   | iv, _, .viewRoot child => CTree.check hdr ch iv (.triangle 0 chamberTriangle) child
   | iv, .triangle root tri, .viewSplit c0 c1 c2 c3 =>
-      CTree.check hdr ch iv (.triangle root (split tri 0)) c0 &&
-      CTree.check hdr ch iv (.triangle root (split tri 1)) c1 &&
-      CTree.check hdr ch iv (.triangle root (split tri 2)) c2 &&
-      CTree.check hdr ch iv (.triangle root (split tri 3)) c3
+      CTree.check hdr ch iv (.triangle root (splitK tri 0)) c0 &&
+      CTree.check hdr ch iv (.triangle root (splitK tri 1)) c1 &&
+      CTree.check hdr ch iv (.triangle root (splitK tri 2)) c2 &&
+      CTree.check hdr ch iv (.triangle root (splitK tri 3)) c3
   | iv, .triangle root tri, .viewCut w c0 c1 c2 =>
       decide ((∀ j, 0 ≤ w j) ∧ w 0 + w 1 + w 2 = 1) &&
       (!decide (0 < w 0) ||
@@ -207,24 +232,24 @@ theorem leafOk_sound (hdr : Fin 64 → Option Header) (hhdr : HeadersCovered hdr
     NoRupert ch iv (.triangle root tri) := by
   cases t with
   | projective e hints =>
-      have hbox := ChartKernel.validEdgeK_sound _ _ h
+      have hbox := ChartKernelF.edgeZ_sound _ _ _ rfl h
       rintro ⟨p, hp, hred, offset, hregion, hrupert⟩
       exact (e.box iv root tri ch).valid_imp_not_translated_rupert hbox hp hred.cayleyBounded
         offset hregion.1 hregion.2 hrupert
   | global g hints =>
-      have hbox := ChartKernelG.validGlobalK_sound _ _ h
+      have hbox := ChartKernelF.globalZ_sound _ _ _ rfl rfl rfl h
       rintro ⟨p, hp, hred, offset, hregion, hrupert⟩
       exact (g.box iv root tri ch).valid_imp_not_translated_rupert hbox p hp hred.cayleyBounded
         hregion.1 hregion.2 offset hrupert
   | mixed m hints =>
-      have hbox := ChartKernelM.validMixedK_sound _ _ h
+      have hbox := ChartKernelF.mixedZ_sound _ _ _ rfl rfl h
       rintro ⟨p, hp, hred, offset, hregion, hrupert⟩
       exact (m.box iv root tri ch).valid_imp_not_translated_rupert hbox p hp hred.cayleyBounded
         hregion.1 hregion.2 offset hrupert
   | projectiveLocal l =>
       simp only [leafOk, Bool.and_eq_true, decide_eq_true_eq] at h
       have hbox := AtlasProjectiveLocalCertificate.Box.Valid.of_viewValid
-        (LocalKernel.viewValidN_sound _ h.1) h.2
+        (LocalKernel.viewValidZ_sound _ h.1) h.2
       rintro ⟨p, hp, -, offset, hregion, hrupert⟩
       exact (l.box iv root tri ch).valid_imp_not_translated_rupert hbox hp offset
         hregion.1 hregion.2 hrupert

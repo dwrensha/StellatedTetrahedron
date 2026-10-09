@@ -49,6 +49,15 @@ def ICovered (f : IFrame) : Prop :=
 def IFrame.WF (f : IFrame) : Bool :=
   Nat.blt 0 f.D && Nat.ble f.X.length 7 && Nat.ble f.H.length f.X.length && f.H.all (0 ≤ ·)
 
+/-- `[g k x₀ h₀, g (k+1) x₁ h₁, …]` over `xs` (with `hs` padded by zeros), by `List.rec`. -/
+def zipIdxR (g : ℕ → ℤ → ℤ → ℤ) (xs : List ℤ) : ℕ → List ℤ → List ℤ :=
+  @List.rec ℤ (fun _ => ℕ → List ℤ → List ℤ) (fun _ _ => [])
+    (fun x _ ih k hs => g k x (hs.headD 0) :: ih (Nat.succ k) hs.tail) xs
+
+/-- `l.map g`, by `List.rec`. -/
+def mapR (g : ℤ → ℤ) (l : List ℤ) : List ℤ :=
+  @List.rec ℤ (fun _ => List ℤ) [] (fun x _ ih => g x :: ih) l
+
 /-- The child frame of a split of variable `v` at `M / (D s)`: `[lo, M]`
 (`upper = false`) or `[M, hi]`, with denominators `2 D s`. -/
 def IFrame.child (f : IFrame) (v : ℕ) (M : ℤ) (s : ℕ) (upper : Bool) : IFrame :=
@@ -56,17 +65,61 @@ def IFrame.child (f : IFrame) (v : ℕ) (M : ℤ) (s : ℕ) (upper : Bool) : IFr
   let hi := (s : ℤ) * (f.X.getD v 0 + f.H.getD v 0)
   let a := if upper then M else lo
   let b := if upper then hi else M
-  { f with D := 2 * f.D * s,
-           X := (List.range f.X.length).map fun i => if i = v then a + b else 2 * s * f.X.getD i 0,
-           H := (List.range f.X.length).map fun i =>
-             if i = v then b - a else 2 * s * f.H.getD i 0 }
+  let s2 : ℤ := Int.ofNat (Nat.mul 2 s)
+  { f with D := Nat.mul (Nat.mul 2 f.D) s,
+           X := zipIdxR (fun i x _ => if i = v then Int.add a b else Int.mul s2 x) f.X 0 [],
+           H := zipIdxR (fun i _ h => if i = v then Int.sub b a else Int.mul s2 h) f.X 0 f.H }
 
-def gcdL (l : List ℤ) (acc : ℕ) : ℕ := l.foldr (fun x a => Nat.gcd x.natAbs a) acc
+/-- `l.foldr (fun x a => Nat.gcd x.natAbs a) acc`, by `List.rec`. -/
+def gcdL (l : List ℤ) (acc : ℕ) : ℕ :=
+  @List.rec ℤ (fun _ => ℕ) acc (fun x _ ih => Nat.gcd x.natAbs ih) l
 
 /-- Divide `D`, `X`, `H` by their common divisor (keeps numbers small). -/
 def IFrame.reduce (f : IFrame) : IFrame :=
   let g := gcdL f.X (gcdL f.H f.D)
-  { f with D := f.D / g, X := f.X.map (· / (g : ℤ)), H := f.H.map (· / (g : ℤ)) }
+  { f with D := Nat.div f.D g, X := mapR (· / (g : ℤ)) f.X, H := mapR (· / (g : ℤ)) f.H }
+
+theorem int_add_eq' (a b : ℤ) : Int.add a b = a + b := rfl
+theorem int_sub_eq' (a b : ℤ) : Int.sub a b = a - b := rfl
+theorem int_mul_eq' (a b : ℤ) : Int.mul a b = a * b := rfl
+
+theorem zipIdxR_cons (g : ℕ → ℤ → ℤ → ℤ) (x : ℤ) (xs : List ℤ) (k : ℕ) (hs : List ℤ) :
+    zipIdxR g (x :: xs) k hs = g k x (hs.headD 0) :: zipIdxR g xs (Nat.succ k) hs.tail := rfl
+
+theorem zipIdxR_length (g : ℕ → ℤ → ℤ → ℤ) (xs : List ℤ) :
+    ∀ (k : ℕ) (hs : List ℤ), (zipIdxR g xs k hs).length = xs.length := by
+  induction xs with
+  | nil => intro _ _; rfl
+  | cons x xs ih => intro k hs; rw [zipIdxR_cons, List.length_cons, ih]; rfl
+
+theorem zipIdxR_getD (g : ℕ → ℤ → ℤ → ℤ) (xs : List ℤ) : ∀ (k : ℕ) (hs : List ℤ) (i : ℕ),
+    (zipIdxR g xs k hs).getD i 0 = if i < xs.length then g (k + i) (xs.getD i 0) (hs.getD i 0) else 0 := by
+  induction xs with
+  | nil => intro _ _ _; rfl
+  | cons x xs ih =>
+      intro k hs i
+      rw [zipIdxR_cons]
+      cases i with
+      | zero =>
+          simp only [List.getD_cons_zero, List.length_cons, Nat.zero_lt_succ, if_true, Nat.add_zero]
+          cases hs <;> rfl
+      | succ i =>
+          rw [List.getD_cons_succ, ih]
+          have e1 : Nat.succ k + i = k + (i + 1) := by omega
+          rw [e1]
+          simp only [List.length_cons, Nat.add_lt_add_iff_right, List.getD_cons_succ]
+          cases hs with
+          | nil => simp
+          | cons h t => rfl
+
+theorem mapR_eq (g : ℤ → ℤ) : ∀ l : List ℤ, mapR g l = l.map g
+  | [] => rfl
+  | x :: l => by
+      show g x :: mapR g l = _
+      rw [mapR_eq g l]; rfl
+
+theorem gcdL_cons (x : ℤ) (l : List ℤ) (acc : ℕ) : gcdL (x :: l) acc = Nat.gcd x.natAbs (gcdL l acc) :=
+  rfl
 
 /-- The frame as a rational `Frame` (no reparametrization). -/
 def IFrame.toFrame (f : IFrame) : Frame :=
@@ -182,6 +235,12 @@ variable (f : IFrame) (v : ℕ) (M : ℤ) (s : ℕ)
 
 theorem IFrame.child_D (upper : Bool) : (f.child v M s upper).D = 2 * f.D * s := rfl
 
+theorem IFrame.child_X_length (upper : Bool) : (f.child v M s upper).X.length = f.X.length := by
+  simp only [IFrame.child]; exact zipIdxR_length _ _ _ _
+
+theorem IFrame.child_H_length (upper : Bool) : (f.child v M s upper).H.length = f.X.length := by
+  simp only [IFrame.child]; exact zipIdxR_length _ _ _ _
+
 /-- The child's interval in coordinate `v` is `[a, b] / (D s)`. -/
 def IFrame.childA (upper : Bool) : ℤ :=
   if upper then M else (s : ℤ) * (f.X.getD v 0 - f.H.getD v 0)
@@ -192,12 +251,16 @@ def IFrame.childB (upper : Bool) : ℤ :=
 theorem IFrame.child_X (upper : Bool) (i : ℕ) : (f.child v M s upper).X.getD i 0 =
     if i < f.X.length then (if i = v then f.childA v M s upper + f.childB v M s upper
       else 2 * s * f.X.getD i 0) else 0 := by
-  simp only [IFrame.child, getD_range_map, IFrame.childA, IFrame.childB]
+  simp only [IFrame.child, zipIdxR_getD, IFrame.childA, IFrame.childB, Nat.zero_add,
+    int_add_eq', int_sub_eq', int_mul_eq']
+  push_cast; rfl
 
 theorem IFrame.child_H (upper : Bool) (i : ℕ) : (f.child v M s upper).H.getD i 0 =
     if i < f.X.length then (if i = v then f.childB v M s upper - f.childA v M s upper
       else 2 * s * f.H.getD i 0) else 0 := by
-  simp only [IFrame.child, getD_range_map, IFrame.childA, IFrame.childB]
+  simp only [IFrame.child, zipIdxR_getD, IFrame.childA, IFrame.childB, Nat.zero_add,
+    int_add_eq', int_sub_eq', int_mul_eq']
+  push_cast; rfl
 
 theorem abs_sub_le_iff' (y c r : ℝ) : |y - c| ≤ r ↔ c - r ≤ y ∧ y ≤ c + r := by
   rw [abs_le]; constructor <;> rintro ⟨h1, h2⟩ <;> constructor <;> linarith
@@ -213,7 +276,8 @@ theorem IFrame.childA_le_childB (upper : Bool) : f.childA v M s upper ≤ f.chil
 
 omit hv in
 theorem IFrame.child_good (hg : f.Good) (upper : Bool) : (f.child v M s upper).Good := by
-  refine ⟨?_, by simpa [IFrame.child] using hg.X, by simp [IFrame.child], fun i => ?_⟩
+  refine ⟨?_, by rw [IFrame.child_X_length]; exact hg.X,
+    by rw [IFrame.child_H_length, IFrame.child_X_length], fun i => ?_⟩
   · rw [IFrame.child_D]; have := hg.D; positivity
   · rw [IFrame.child_H]
     have := f.childA_le_childB v M s hlo hhi upper
@@ -356,15 +420,15 @@ theorem gcdL_dvd : ∀ (l : List ℤ) (acc : ℕ),
   | [], acc => ⟨dvd_rfl, by simp⟩
   | x :: l, acc => by
       obtain ⟨h1, h2⟩ := gcdL_dvd l acc
-      simp only [gcdL, List.foldr_cons] at h1 h2 ⊢
+      simp only [gcdL_cons] at h1 h2 ⊢
       refine ⟨(Nat.gcd_dvd_right _ _).trans h1, fun y hy => ?_⟩
       rcases List.mem_cons.mp hy with rfl | hy
       · exact Int.natCast_dvd.mpr (Nat.gcd_dvd_left _ _)
       · exact (Int.natCast_dvd_natCast.mpr (Nat.gcd_dvd_right _ _)).trans (h2 y hy)
 
 theorem getD_map_div (l : List ℤ) (g : ℤ) (i : ℕ) :
-    (l.map (· / g)).getD i 0 = l.getD i 0 / g := by
-  simp only [List.getD_eq_getElem?_getD, List.getElem?_map]
+    (mapR (· / g) l).getD i 0 = l.getD i 0 / g := by
+  simp only [mapR_eq, List.getD_eq_getElem?_getD, List.getElem?_map]
   cases l[i]? <;> simp
 
 section reduce
@@ -405,7 +469,8 @@ theorem IFrame.rg_spec : 0 < f.rg ∧ f.rg ∣ f.D ∧ (∀ i, (f.rg : ℤ) ∣ 
 
 theorem IFrame.reduce_good : f.reduce.Good := by
   obtain ⟨hgpos, hgD, hX, hH⟩ := f.rg_spec hg
-  refine ⟨?_, by simpa [IFrame.reduce] using hg.X, by simpa [IFrame.reduce] using hg.H,
+  refine ⟨?_, by simpa [IFrame.reduce, mapR_eq] using hg.X,
+    by simpa [IFrame.reduce, mapR_eq] using hg.H,
     fun i => ?_⟩
   · rw [IFrame.reduce_D]; exact Nat.div_pos (Nat.le_of_dvd hg.D hgD) hgpos
   · rw [IFrame.reduce_H]; exact Int.ediv_nonneg (hg.Hnn i) (by positivity)

@@ -67,12 +67,30 @@ def finE (n v : ℕ) : Expr :=
   mkApp3 (Lean.mkConst ``Fin.mk) nE vE (decideProofE prop inst)
 
 /-- `![e₀, …, e_{k-1}] : Fin k → τ`. -/
-def vecE (τ : Expr) (es : Array Expr) : Expr := Id.run do
+def vecConsE (τ : Expr) (es : Array Expr) : Expr := Id.run do
   let mut acc := mkApp (Lean.mkConst ``Matrix.vecEmpty [Level.zero]) τ
   for idx in [0:es.size] do
     let i := es.size - 1 - idx
     acc := mkApp4 (Lean.mkConst ``Matrix.vecCons [Level.zero]) τ (natE idx) es[i]! acc
   acc
+
+/-- The function `i ↦ eᵢ : Fin k → τ` (for `τ : Type`) as a balanced `Bool.rec` tree on
+`Nat.blt i.val m`: the kernel selects an entry in `⌈log₂ k⌉` accelerated comparisons, where
+an `![…]` literal unfolds `Fin.cons` and `Fin.induction` once per preceding entry. -/
+def vecE (τ : Expr) (es : Array Expr) : Expr :=
+  if es.size = 0 then vecConsE τ es else
+  let n := es.size
+  let v := mkApp2 (Lean.mkConst ``Fin.val) (natE n) (.bvar 0)
+  let motive := mkLambda `_ .default (Lean.mkConst ``Bool) τ
+  let rec go (fuel lo hi : ℕ) : Expr :=
+    match fuel with
+    | 0 => es[lo]!
+    | fuel + 1 =>
+      if hi ≤ lo + 1 then es[lo]! else
+      let mid := (lo + hi) / 2
+      mkApp4 (Lean.mkConst ``Bool.rec [Level.one]) motive (go fuel mid hi) (go fuel lo mid)
+        (mkApp2 (Lean.mkConst ``Nat.blt) v (natE mid))
+  mkLambda `i .default (mkApp (Lean.mkConst ``Fin) (natE n)) (go n 0 n)
 
 def ratTy : Expr := Lean.mkConst ``Rat
 

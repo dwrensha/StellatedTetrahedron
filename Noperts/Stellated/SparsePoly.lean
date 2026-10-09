@@ -137,8 +137,14 @@ theorem eval_pow (x : ℕ → ℝ) (p : Poly) (k : ℕ) :
 
 /-! ## Normalization (merging equal monomials) -/
 
-/-- Drop trailing zero exponents so equal monomials have equal lists. -/
-def trim (m : Mono) : Mono := (m.reverse.dropWhile (· == 0)).reverse
+/-- `trim` for compiled code. -/
+def trimNative (m : Mono) : Mono := (m.reverse.dropWhile (· == 0)).reverse
+
+/-- Drop trailing zero exponents so equal monomials have equal lists (one pass by
+`List.rec`, for the kernel). -/
+@[implemented_by trimNative]
+def trim (m : Mono) : Mono :=
+  @List.rec ℕ (fun _ => Mono) [] (fun a _ r => cond (Nat.beq a 0 && r.isEmpty) [] (a :: r)) m
 
 theorem monoEvalFrom_append_zero (x : ℕ → ℝ) :
     ∀ (k : ℕ) (m : Mono), monoEvalFrom x k (m ++ [0]) = monoEvalFrom x k m
@@ -152,23 +158,25 @@ theorem monoEvalFrom_append_zeros (x : ℕ → ℝ) (k : ℕ) (m : Mono) :
       rw [List.replicate_succ', ← List.append_assoc,
         monoEvalFrom_append_zero, monoEvalFrom_append_zeros x k m n]
 
+theorem trim_cons (a : ℕ) (m : Mono) :
+    trim (a :: m) = cond (Nat.beq a 0 && (trim m).isEmpty) [] (a :: trim m) := rfl
+
 theorem trim_spec (m : Mono) :
     ∃ n, m = trim m ++ List.replicate n 0 := by
-  unfold trim
-  set r := m.reverse
-  obtain ⟨n, hn⟩ : ∃ n, r.takeWhile (· == 0) = List.replicate n 0 := by
-    refine ⟨(r.takeWhile (· == 0)).length, ?_⟩
-    apply List.eq_replicate_iff.mpr
-    refine ⟨rfl, fun b hb => ?_⟩
-    have hall := List.all_takeWhile (p := (· == 0)) (l := r)
-    rw [List.all_eq_true] at hall
-    simpa using hall b hb
-  refine ⟨n, ?_⟩
-  have hsplit := List.takeWhile_append_dropWhile (p := (· == 0)) (l := r)
-  calc m = r.reverse := by simp [r]
-    _ = (r.takeWhile (· == 0) ++ r.dropWhile (· == 0)).reverse := by rw [hsplit]
-    _ = (r.dropWhile (· == 0)).reverse ++ List.replicate n 0 := by
-        rw [List.reverse_append, hn, List.reverse_replicate]
+  induction m with
+  | nil => exact ⟨0, rfl⟩
+  | cons a m ih =>
+      obtain ⟨k, hk⟩ := ih
+      rw [trim_cons]
+      cases ha : Nat.beq a 0 <;> cases hr : (trim m).isEmpty
+      · exact ⟨k, by simp only [Bool.false_and, cond_false, List.cons_append]; rw [← hk]⟩
+      · exact ⟨k, by simp only [Bool.false_and, cond_false, List.cons_append]; rw [← hk]⟩
+      · exact ⟨k, by simp only [Bool.true_and, Bool.false_eq_true, cond_false, List.cons_append]; rw [← hk]⟩
+      · have h0 : a = 0 := Nat.eq_of_beq_eq_true ha
+        have he : trim m = [] := List.isEmpty_iff.mp hr
+        refine ⟨k + 1, ?_⟩
+        simp only [Bool.and_self, cond_true, List.nil_append, List.replicate_succ, h0]
+        rw [hk, he]; simp
 
 theorem monoEval_trim (x : ℕ → ℝ) (m : Mono) :
     monoEval x (trim m) = monoEval x m := by
@@ -194,17 +202,42 @@ theorem eval_insertTerm (x : ℕ → ℝ) (t : Mono × ℚ) :
 
 /-- Lexicographic order on monomials (a total order, so equal monomials end
 up adjacent after sorting). -/
-def monoLeLex : Mono → Mono → Bool
+def monoLeLexNative : Mono → Mono → Bool
   | [], _ => true
   | _ :: _, [] => false
-  | a :: m, b :: n => a < b || (a == b && monoLeLex m n)
+  | a :: m, b :: n => a < b || (a == b && monoLeLexNative m n)
+
+@[implemented_by monoLeLexNative]
+def monoLeLex (m n : Mono) : Bool :=
+  @List.rec ℕ (fun _ => Mono → Bool) (fun _ => true)
+    (fun a _ ih n => List.casesOn (motive := fun _ => Bool) n false
+      (fun b n' => cond (Nat.blt a b) true (cond (Nat.beq a b) (ih n') false))) m n
+
+def monoEqNative (m n : Mono) : Bool := m == n
+
+/-- Equality of monomials (by `List.rec` and `Nat.beq`, for the kernel). -/
+@[implemented_by monoEqNative]
+def monoEq (m n : Mono) : Bool :=
+  @List.rec ℕ (fun _ => Mono → Bool) (fun n => n.isEmpty)
+    (fun a _ ih n => List.casesOn (motive := fun _ => Bool) n false
+      (fun b n' => cond (Nat.beq a b) (ih n') false)) m n
+
+theorem monoEq_sound : ∀ (m n : Mono), monoEq m n = true → m = n
+  | [], n, h => (List.isEmpty_iff.mp h).symm
+  | a :: m, [], h => by simp [monoEq] at h
+  | a :: m, b :: n, h => by
+      have h' : cond (Nat.beq a b) (monoEq m n) false = true := h
+      cases hab : Nat.beq a b
+      · rw [hab] at h'; simp at h'
+      · rw [hab, Bool.cond_true] at h'
+        rw [Nat.eq_of_beq_eq_true hab, monoEq_sound m n h']
 
 /-- Merge adjacent terms with equal monomials. -/
 def mergeAdj : Poly → Poly
   | [] => []
   | t :: p =>
       match mergeAdj p with
-      | s :: q => if s.1 = t.1 then (t.1, t.2 + s.2) :: q else t :: s :: q
+      | s :: q => cond (monoEq s.1 t.1) ((t.1, t.2 + s.2) :: q) (t :: s :: q)
       | [] => [t]
 
 /-- Merge two term lists by `monoLeLex`, recursing on `fuel` (structural, so
@@ -215,7 +248,7 @@ def mergeF : ℕ → Poly → Poly → Poly
   | _ + 1, [], q => q
   | _ + 1, p, [] => p
   | fuel + 1, s :: p, t :: q =>
-      if monoLeLex s.1 t.1 then s :: mergeF fuel p (t :: q) else t :: mergeF fuel (s :: p) q
+      cond (monoLeLex s.1 t.1) (s :: mergeF fuel p (t :: q)) (t :: mergeF fuel (s :: p) q)
 
 /-- Split a list into alternate elements. -/
 def halves : Poly → Poly × Poly
@@ -257,11 +290,12 @@ theorem eval_mergeAdj (x : ℕ → ℝ) : ∀ p : Poly, eval x (mergeAdj p) = ev
       split
       · rename_i s q hq
         rw [hq] at ih
-        split_ifs with h
-        · simp only [eval_cons] at ih ⊢
-          rw [← ih, h]; push_cast; ring
-        · simp only [eval_cons] at ih ⊢
+        cases hm : monoEq s.1 t.1
+        · simp only [Bool.cond_false, eval_cons] at ih ⊢
           rw [← ih]
+        · have h := monoEq_sound _ _ hm
+          simp only [Bool.cond_true, eval_cons] at ih ⊢
+          rw [← ih, h]; push_cast; ring
       · rename_i hq
         rw [hq] at ih
         simp only [eval_cons] at ih ⊢
@@ -287,9 +321,9 @@ theorem eval_mergeF (x : ℕ → ℝ) :
   | _ + 1, s :: p, [] => by simp [mergeF, eval]
   | fuel + 1, s :: p, t :: q => by
       unfold mergeF
-      split_ifs
-      · rw [eval_cons, eval_mergeF x fuel p (t :: q), eval_cons, eval_cons]; ring
-      · rw [eval_cons, eval_mergeF x fuel (s :: p) q, eval_cons, eval_cons]; ring
+      cases monoLeLex s.1 t.1
+      · rw [Bool.cond_false, eval_cons, eval_mergeF x fuel (s :: p) q, eval_cons, eval_cons]; ring
+      · rw [Bool.cond_true, eval_cons, eval_mergeF x fuel p (t :: q), eval_cons, eval_cons]; ring
 
 theorem eval_halves (x : ℕ → ℝ) :
     ∀ p : Poly, eval x (halves p).1 + eval x (halves p).2 = eval x p

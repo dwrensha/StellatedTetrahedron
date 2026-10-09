@@ -90,12 +90,12 @@ To generate and check it:
 ```
 scripts/fetch_packs.sh      # the certificate packs, into packs/
 scripts/gen_kernel.sh       # the generated modules, into StellatedKernel/ (about 1–1.5 hours)
-lake build StellatedKernel  # checks them (about 7 hours)
+lake build StellatedKernel  # checks them (just under 4 hours)
 ```
 
 Each generated module stays within a few GB of memory, so Lake can check them all at full
-parallelism: on a 16-core, 94 GB machine the whole kernel proof takes about 105 CPU-hours,
-roughly 7 hours of wall-clock time. The generated modules are not checked in, and
+parallelism: on a 16-core, 94 GB machine the whole kernel proof takes about 58 CPU-hours,
+roughly 3 hours 50 minutes of wall-clock time. The generated modules are not checked in, and
 `StellatedKernel` is not a default target (plain `lake build` builds only the library). They
 load their data by repo-relative paths, so run `lake build StellatedKernel` from the repository
 root. [`scripts/kernel_corner_tables.tsv`](scripts/kernel_corner_tables.tsv) lists the corner

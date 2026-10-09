@@ -201,6 +201,108 @@ def accP (D N : ℕ) (ax up wp wm : List ℕ) (sgB : List Bool) :
         accP D N ax up wp wm sgB S (vP + cP) vN (V + cP) (T + c * r.2.1)
           (gP + c * r.2.2.2.1) (gN + c * r.2.2.2.2)
 
+
+/-! ### Kernel-friendly forms of `walk` and `accP`
+
+The same recursions, by `List.rec` (the kernel reduces a recursor application in one step,
+where structural recursion through `brecOn` takes several) and with `Nat` primitives. -/
+
+/-- `xor`, by `cond`. -/
+def xorB (a b : Bool) : Bool := cond a (cond b false true) b
+
+theorem xorB_eq (a b : Bool) : xorB a b = (a ^^ b) := by cases a <;> cases b <;> rfl
+
+/-- The five results of a walk. -/
+structure W5 where
+  P : ℕ
+  Q : ℕ
+  par : Bool
+  zp : ℕ
+  zm : ℕ
+
+def W5.toP (w : W5) : ℕ × ℕ × Bool × ℕ × ℕ := (w.P, w.Q, w.par, w.zp, w.zm)
+
+/-- `walk`, by `List.rec`. -/
+def walkW (ax up wp wm : List ℕ) (sgB : List Bool) (m : Mono) : W5 :=
+  @List.rec ℕ (fun _ => List ℕ → List ℕ → List ℕ → List ℕ → List Bool → W5)
+    (fun _ _ _ _ _ => ⟨1, 1, false, 0, 0⟩)
+    (fun e _ ih ax up wp wm sgB =>
+      let r := ih ax.tail up.tail wp.tail wm.tail sgB.tail
+      cond (Nat.beq e 0) r
+        (let ae := Nat.pow (ax.headD 0) e
+         let de := Nat.mul (Nat.mul e (Nat.pow (ax.headD 0) (Nat.sub e 1))) r.P
+         ⟨Nat.mul ae r.P, Nat.mul (Nat.pow (up.headD 0) e) r.Q,
+          xorB (cond (sgB.headD false) (Nat.beq (Nat.mod e 2) 1) false) r.par,
+          Nat.add (Nat.mul ae r.zp) (Nat.mul de (wp.headD 0)),
+          Nat.add (Nat.mul ae r.zm) (Nat.mul de (wm.headD 0))⟩))
+    m ax up wp wm sgB
+
+theorem walkW_cons (ax up wp wm : List ℕ) (sgB : List Bool) (e : ℕ) (m : Mono) :
+    walkW ax up wp wm sgB (e :: m) =
+      let r := walkW ax.tail up.tail wp.tail wm.tail sgB.tail m
+      cond (Nat.beq e 0) r
+        (let ae := Nat.pow (ax.headD 0) e
+         let de := Nat.mul (Nat.mul e (Nat.pow (ax.headD 0) (Nat.sub e 1))) r.P
+         ⟨Nat.mul ae r.P, Nat.mul (Nat.pow (up.headD 0) e) r.Q,
+          xorB (cond (sgB.headD false) (Nat.beq (Nat.mod e 2) 1) false) r.par,
+          Nat.add (Nat.mul ae r.zp) (Nat.mul de (wp.headD 0)),
+          Nat.add (Nat.mul ae r.zm) (Nat.mul de (wm.headD 0))⟩) := rfl
+
+theorem parity_eq (b : Bool) (e : ℕ) :
+    cond b (Nat.beq (Nat.mod e 2) 1) false = (b && e % 2 == 1) := by
+  cases b
+  · rfl
+  · simp only [cond_true, Bool.true_and]
+    rw [Bool.eq_iff_iff, beq_iff_eq, Nat.beq_eq]; rfl
+
+theorem walkW_eq (ax up wp wm : List ℕ) (sgB : List Bool) (m : Mono) :
+    (walkW ax up wp wm sgB m).toP = walk ax up wp wm sgB m := by
+  induction m generalizing ax up wp wm sgB with
+  | nil => rfl
+  | cons e m ih =>
+      rw [walkW_cons]
+      simp only [walk]
+      rw [← ih]
+      by_cases he : e = 0
+      · subst he; rfl
+      · have : Nat.beq e 0 = false := by
+          rw [Bool.eq_false_iff]; intro h; exact he (Nat.eq_of_beq_eq_true h)
+        rw [this, if_neg he]
+        simp only [Bool.cond_false, W5.toP, xorB_eq, parity_eq]
+        rfl
+
+/-- `accP`, by `List.rec`. -/
+def accPF (D N : ℕ) (ax up wp wm : List ℕ) (sgB : List Bool) (S : List (Mono × ℕ × Bool)) :
+    ℕ → ℕ → ℕ → ℕ → ℕ → ℕ → ℕ × ℕ × ℕ × ℕ × ℕ × ℕ :=
+  @List.rec (Mono × ℕ × Bool) (fun _ => ℕ → ℕ → ℕ → ℕ → ℕ → ℕ → ℕ × ℕ × ℕ × ℕ × ℕ × ℕ)
+    (fun vP vN V T gP gN => (vP, vN, V, T, gP, gN))
+    (fun t _ ih vP vN V T gP gN =>
+      let r := walkW ax up wp wm sgB t.1
+      let c := Nat.mul t.2.1 (Nat.pow D (Nat.sub N (degM t.1)))
+      let cP := Nat.mul c r.P
+      cond (xorB t.2.2 r.par)
+        (ih vP (Nat.add vN cP) (Nat.add V cP) (Nat.add T (Nat.mul c r.Q))
+          (Nat.add gP (Nat.mul c r.zm)) (Nat.add gN (Nat.mul c r.zp)))
+        (ih (Nat.add vP cP) vN (Nat.add V cP) (Nat.add T (Nat.mul c r.Q))
+          (Nat.add gP (Nat.mul c r.zp)) (Nat.add gN (Nat.mul c r.zm))))
+    S
+
+theorem accPF_eq (D N : ℕ) (ax up wp wm : List ℕ) (sgB : List Bool) (S : List (Mono × ℕ × Bool))
+    (vP vN V T gP gN : ℕ) :
+    accPF D N ax up wp wm sgB S vP vN V T gP gN = accP D N ax up wp wm sgB S vP vN V T gP gN := by
+  induction S generalizing vP vN V T gP gN with
+  | nil => rfl
+  | cons t S ih =>
+      show cond (xorB t.2.2 (walkW ax up wp wm sgB t.1).par)
+        (accPF D N ax up wp wm sgB S vP _ _ _ _ _) (accPF D N ax up wp wm sgB S _ vN _ _ _ _) = _
+      rw [ih, ih]
+      simp only [accP]
+      rw [← walkW_eq]
+      simp only [W5.toP, xorB_eq]
+      by_cases h : (t.2.2 ^^ (walkW ax up wp wm sgB t.1).par) = true
+      · simp only [h, Bool.cond_true, ↓reduceIte]; rfl
+      · simp only [Bool.eq_false_iff.mpr h, Bool.cond_false, Bool.false_eq_true, ↓reduceIte]; rfl
+
 /-- The (negated) linear-part bound of one coordinate: `|p - q|` (centered) or
 `(q - p)⁺` (corner). -/
 def linT (centered : Bool) (p q : ℕ) : ℕ :=
@@ -223,7 +325,7 @@ magnitudes `ax` and signs `sgB` (over `D`), displacement `h ∈ [-H, H] / D`
 def cheapP (S : List (Mono × ℕ × Bool)) (D : ℕ) (ax : List ℕ) (sgB : List Bool)
     (H : List ℕ) (centered : Bool) : Bool :=
   let N := maxDegN S
-  let a := accP D N ax (addL7 ax H) (packW sgB H false) (packW sgB H true) sgB S 0 0 0 0 0 0
+  let a := accPF D N ax (addL7 ax H) (packW sgB H false) (packW sgB H true) sgB S 0 0 0 0 0 0
   let f := finishLin centered a.2.2.2.2.1 a.2.2.2.2.2 7
   Nat.blt 0 D && S.all (fun t => Nat.ble t.1.length 7) &&
     Nat.ble ax.length 7 && Nat.ble H.length 7 &&
@@ -569,7 +671,7 @@ theorem max_loI (H : List ℕ) (centered : Bool) (i : ℕ) :
 theorem cheapP_imp (S : List (Mono × ℕ × Bool)) (D : ℕ) (ax : List ℕ) (sgB : List Bool)
     (H : List ℕ) (centered : Bool) (h : cheapP S D ax sgB H centered = true) :
     cheapI (toIPoly S) D (xI ax sgB) (loI H centered) (natI H) = true := by
-  simp only [cheapP, accP_eq, finishLin_eq, Bool.and_eq_true, Nat.blt_eq, Nat.ble_eq,
+  simp only [cheapP, accPF_eq, accP_eq, finishLin_eq, Bool.and_eq_true, Nat.blt_eq, Nat.ble_eq,
     List.all_eq_true, zero_add] at h
   obtain ⟨⟨⟨⟨⟨hD, hS⟩, hax⟩, hH⟩, hbound⟩, hfin⟩ := h
   set N := maxDegN S with hNdef
