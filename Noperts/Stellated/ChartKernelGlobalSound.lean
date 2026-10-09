@@ -292,9 +292,8 @@ theorem viewVec_rep (bx : Box) (t : V3) (s : ℤ) :
 
 theorem coefficient_scale (vars : Fin 3 → RatBall) (c : ℚ) (q : RatQuadratic3) (i j k : Fin 3) :
     QuadraticBernstein.coefficient vars (RatQuadratic3.scale c q) i j k =
-      c * QuadraticBernstein.coefficient vars q i j k := by
-  simp only [QuadraticBernstein.coefficient, RatQuadratic3.scale, RatQuadratic3.evalQ]
-  split_ifs <;> ring
+      c * QuadraticBernstein.coefficient vars q i j k :=
+  QuadraticBernstein.coefficient_scale vars c q i j k
 
 theorem trow_toQ1 (bx : Box) (a : Fin 3) :
     (trow bx a).toQ = (((1 : ℤ) * triL (shell bx) : ℤ) : ℚ) • bx.triangle a := by
@@ -377,9 +376,7 @@ theorem supportAt_neg (bx : Box) (hL : 0 < triL (shell bx)) (a i : Fin 3) (k : V
   have : (0 : ℚ) < triL (shell bx) * (40000 * 40) := by
     have : (0 : ℚ) < triL (shell bx) := by exact_mod_cast hL
     positivity
-  by_contra hn
-  have := mul_nonneg this.le (not_lt.mp hn)
-  linarith
+  exact (Rat.mul_neg_iff_of_pos_left this).mp hq
 
 theorem defectMaskT_eq (idx : VertexIndex) :
     defectMaskT idx = maskK (fun t => t % 8 != idx.val) 72 := by

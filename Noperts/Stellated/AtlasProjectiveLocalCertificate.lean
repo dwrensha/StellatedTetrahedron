@@ -1798,12 +1798,7 @@ theorem Box.exactVariation_coordinate_error (box : Box)
     _ ≤ |exact coordinate - approx coordinate| +
         |approx coordinate -
           (box.variationBall j coordinate).center| := by
-      rw [show exact coordinate -
-          (box.variationBall j coordinate).center =
-        (exact coordinate - approx coordinate) +
-          (approx coordinate -
-            (box.variationBall j coordinate).center) by ring]
-      exact abs_add_le _ _
+      exact abs_sub_le _ _ _
     _ ≤ (variationError : ℝ) +
         ((box.variationBall j coordinate).radius : ℝ) :=
       add_le_add hcoordError hball'

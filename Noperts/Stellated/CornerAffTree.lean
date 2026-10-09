@@ -59,8 +59,7 @@ theorem not_rupert_sharedDA (r f : Row) (hf : f.KeyFacts) (hseg : r.seg = f.seg)
       exact hD
     rw [hdisp] at hD'
     have hd := cayleyDenom_pos p.x p.y p.z
-    exact nonneg_of_mul_nonneg_right (by linarith) hd |>.trans_eq' rfl
-      |> fun h => (le_of_mul_le_mul_left (by simpa using hD') hd)
+    exact nonneg_of_mul_nonneg_right hD' hd
 
 /-- `CornerKernel.SharedPValid` with a common (possibly nonempty) reparametrization. -/
 structure SharedPValidA (r f : Row) (fp : FactPoly) : Prop where
@@ -171,7 +170,7 @@ theorem sharedPA_covered (facts : Array Row) (fps : Array FactPoly)
           have hok := hfps ⟨k, hkl⟩
           simp only [FactPolyAt, hk, Fin.getElem_fin] at hok
           have hfp' : fps[k] = fp := by
-            rw [Array.getElem?_eq_getElem hkl] at hp; exact Option.some.inj hp
+            exact Array.getElem_eq_iff.mpr hp
           rw [hfp'] at hok
           have hbox : (frameRow f triple sp shift).box = f.box := by
             simp [Frame.box, Frame.toRow, Row.box, frameRow]

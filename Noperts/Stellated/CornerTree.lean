@@ -597,7 +597,7 @@ theorem leaf_covered (H : Handoffs) (hH : ∀ h f, H.Valid h f → Covered f)
               have hok := hfps ⟨k, hkl⟩
               simp only [FactPolyAt, hk, Fin.getElem_fin] at hok
               have hfp' : fps[k] = fp := by
-                rw [Array.getElem?_eq_getElem hkl] at hp; exact Option.some.inj hp
+                exact Array.getElem_eq_iff.mpr hp
               rw [hfp'] at hok
               have hbox : row.box = f.box := by
                 simp [Frame.box, Frame.toRow, Row.box, hcenter, hradius]

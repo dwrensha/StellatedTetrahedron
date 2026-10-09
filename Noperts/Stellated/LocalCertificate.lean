@@ -785,9 +785,7 @@ theorem valid_center_normalizedA_approx (box : Box)
     (cert.normalizedAAt box box.center.toReal 0)
     (toR3 (box.approxNormalizedA j)) (cert.B : ℝ) RationalApprox.κ
     (by unfold RationalApprox.κ; norm_num)
-    (fun i => by
-      unfold AxisCertificate.realWeight
-      exact_mod_cast (h.weight_pos j i).le)
+    (fun i => AxisCertificate.realWeight_nonneg box h j i)
     (by exact_mod_cast AxisCertificate.B_pos box h j)
     (by
       unfold AxisCertificate.B AxisCertificate.realWeight
@@ -843,10 +841,8 @@ theorem valid_normalizedA_move (box : Box) (h : box.GeometricValid)
         toR3 (box.approxNormalizedA j)‖ ≤
       ((box.axisPerturbation : ℚ) : ℝ) := by
   let cert := box.certificate j
-  have hweight : ∀ i, 0 ≤ cert.realWeight i := by
-    intro i
-    unfold AxisCertificate.realWeight
-    exact_mod_cast (h.weight_pos j i).le
+  have hweight : ∀ i, 0 ≤ cert.realWeight i := fun i =>
+    AxisCertificate.realWeight_nonneg box h j i
   have hbudget :
       ∑ i, cert.realWeight i *
           (‖cert.realDirection i‖ * ‖cert.realVertex box i‖) ≤ (cert.B : ℝ) :=
@@ -873,15 +869,7 @@ theorem valid_normalizedA_move (box : Box) (h : box.GeometricValid)
         toR3 (box.approxNormalizedA j)‖ ≤
       ‖cert.normalizedAAt box q offset - cert.normalizedAAt box box.center.toReal 0‖ +
         ‖cert.normalizedAAt box box.center.toReal 0 -
-          toR3 (box.approxNormalizedA j)‖ := by
-      dsimp [cert]
-      rw [show (box.certificate j).normalizedAAt box q offset -
-          toR3 (box.approxNormalizedA j) =
-        ((box.certificate j).normalizedAAt box q offset -
-            (box.certificate j).normalizedAAt box box.center.toReal 0) +
-          ((box.certificate j).normalizedAAt box box.center.toReal 0 -
-            toR3 (box.approxNormalizedA j)) by abel]
-      exact norm_add_le _ _
+          toR3 (box.approxNormalizedA j)‖ := norm_sub_le_norm_sub_add_norm_sub _ _ _
     _ ≤ (box.outerRadius : ℝ) + (centerVectorError : ℝ) :=
       add_le_add hcenterMove' happrox
     _ = ((box.axisPerturbation : ℚ) : ℝ) := by

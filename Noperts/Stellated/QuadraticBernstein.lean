@@ -148,9 +148,7 @@ private theorem lower_le_sum_mul {ι : Type} [Fintype ι]
   calc
     lower = ∑ i, lower * weight i := by rw [← Finset.mul_sum, hsum, mul_one]
     _ ≤ ∑ i, coefficient i * weight i := by
-      apply Finset.sum_le_sum
-      intro i _
-      exact mul_le_mul_of_nonneg_right (hcoefficient i) (hweight i)
+      exact Finset.sum_le_sum fun i _ => mul_le_mul_of_nonneg_right (hcoefficient i) (hweight i)
 
 theorem lower_le_evalBernstein (vars : Fin 3 → RatBall)
     (q : RatQuadratic3) {tx ty tz : ℝ}

@@ -156,8 +156,7 @@ theorem holds_mul {a b : RatBall} {x y : ℝ}
   calc
     |(a.center : ℝ) * dy + dx * (b.center : ℝ) + dx * dy| ≤
         |(a.center : ℝ) * dy| + |dx * (b.center : ℝ)| + |dx * dy| := by
-      exact (abs_add_le _ _).trans
-        (add_le_add (abs_add_le _ _) (le_refl _))
+      exact abs_add_three _ _ _
     _ = |(a.center : ℝ)| * |dy| + |dx| * |(b.center : ℝ)| +
         |dx| * |dy| := by rw [abs_mul, abs_mul, abs_mul]
     _ ≤ |(a.center : ℝ)| * (b.radius : ℝ) +

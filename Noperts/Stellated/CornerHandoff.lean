@@ -259,9 +259,7 @@ theorem not_rupert_of_cayley_zero {p : AtlasPose ℝ} (hx : p.x = 0) (hy : p.y =
   have hchart : CayleyAtlas.chartMatrix 0 = 1 := by
     ext i j
     fin_cases i <;> fin_cases j <;> simp [CayleyAtlas.chartMatrix]
-  have hcayley : cayleyMatrix 0 0 0 = 1 := by
-    ext i j
-    fin_cases i <;> fin_cases j <;> simp [cayleyMatrix, cayleyDenom]
+  have hcayley : cayleyMatrix 0 0 0 = 1 := cayleyMatrix_zero
   rw [hchart, hcayley, Matrix.mul_one, Matrix.mul_one]
 
 /-! ## Face selection -/

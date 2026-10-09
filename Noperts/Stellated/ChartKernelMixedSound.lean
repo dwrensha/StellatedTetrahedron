@@ -16,12 +16,8 @@ open AtlasProjectiveMixedGlobalCertificate
 
 theorem coefficient_add (vars : Fin 3 → RatBall) (p q : RatQuadratic3) (i j k : Fin 3) :
     QuadraticBernstein.coefficient vars (p + q) i j k =
-      QuadraticBernstein.coefficient vars p i j k + QuadraticBernstein.coefficient vars q i j k := by
-  simp only [QuadraticBernstein.coefficient, RatQuadratic3.evalQ, RatQuadratic3.add_c0,
-    RatQuadratic3.add_cx, RatQuadratic3.add_cy, RatQuadratic3.add_cz, RatQuadratic3.add_cxx,
-    RatQuadratic3.add_cxy, RatQuadratic3.add_cxz, RatQuadratic3.add_cyy, RatQuadratic3.add_cyz,
-    RatQuadratic3.add_czz]
-  split_ifs <;> ring
+      QuadraticBernstein.coefficient vars p i j k + QuadraticBernstein.coefficient vars q i j k :=
+  QuadraticBernstein.coefficient_add vars p q i j k
 
 theorem wDen_pos (mb : Box) : 0 < wDen mb := lcmList_pos _
 

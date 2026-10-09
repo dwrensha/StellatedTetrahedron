@@ -242,10 +242,7 @@ theorem valid_imp_not_rupert_ix (symmetryIndex : OrbitIndex) (r : ℚ)
             AtlasLocalCertificate.Box.mismatchQuadratic,
             hsym]
             using htube
-        have hr : tube.r ≤ box.r := by
-          calc
-            tube.r = r := htubeRadius
-            _ ≤ box.r := hboxRadius
+        have hr : tube.r ≤ box.r := le_of_eq_of_le htubeRadius hboxRadius
         simpa [actual, Box.retarget] using hmismatchTube.trans hr
       have hactual : actual.Valid :=
         Box.Valid.of_viewValid hactualView hmismatch

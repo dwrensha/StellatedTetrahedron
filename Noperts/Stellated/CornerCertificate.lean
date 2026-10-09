@@ -617,7 +617,7 @@ theorem Row.not_rupert (r : Row) (hv : r.Valid) (p : AtlasPose ℝ) (offset : �
       · exact r.eval_F_nonneg hv.disp hmem hrad
     rw [hdisp] at hD
     have hd := cayleyDenom_pos p.x p.y p.z
-    exact nonneg_of_mul_nonneg_right (by linarith) hd |>.trans_eq' rfl
+    exact nonneg_of_mul_nonneg_right hD hd
 
 /-! ## Rows sharing a table's root-frame facts
 
@@ -663,7 +663,7 @@ theorem Row.SubBox.mem {r f : Row} (h : r.SubBox f) {y : ℕ → ℝ} (hy : r.bo
     have hyi := hy i
     calc |y i - (f.box.center i : ℝ)|
         ≤ |y i - (r.box.center i : ℝ)| + |(r.box.center i : ℝ) - f.box.center i| := by
-          simpa using abs_sub_le (y i) (r.box.center i : ℝ) (f.box.center i : ℝ)
+          exact abs_sub_le (y i) (r.box.center i : ℝ) (f.box.center i : ℝ)
       _ ≤ f.box.radius i := by linarith
   · have hge : r.boxDim f ≤ i := Nat.le_of_not_lt hi
     simp only [Row.boxDim] at hge
@@ -729,8 +729,7 @@ theorem Row.not_rupert_fact (f : Row) (hf : f.KeyFacts) (hfaff : f.aff = [])
       exact hD
     rw [hdisp] at hD'
     have hd := cayleyDenom_pos p.x p.y p.z
-    exact nonneg_of_mul_nonneg_right (by linarith) hd |>.trans_eq' rfl
-      |> fun h => (le_of_mul_le_mul_left (by simpa using hD') hd)
+    exact nonneg_of_mul_nonneg_right hD' hd
 
 /-- A row sharing `f`'s key facts, given the displacement's sign at the point. -/
 theorem Row.not_rupert_sharedD (r f : Row) (hf : f.KeyFacts) (hseg : r.seg = f.seg)
@@ -768,8 +767,7 @@ theorem Row.not_rupert_sharedD (r f : Row) (hf : f.KeyFacts) (hseg : r.seg = f.s
       exact hD
     rw [hdisp] at hD'
     have hd := cayleyDenom_pos p.x p.y p.z
-    exact nonneg_of_mul_nonneg_right (by linarith) hd |>.trans_eq' rfl
-      |> fun h => (le_of_mul_le_mul_left (by simpa using hD') hd)
+    exact nonneg_of_mul_nonneg_right hD' hd
 
 theorem Row.not_rupert_shared (r f : Row) (hf : f.KeyFacts) (hv : r.SharedValid f)
     (p : AtlasPose ℝ) (offset : ℝ²)

@@ -83,9 +83,9 @@ theorem axisAngle_weighted_displacement_nonneg
         _ ≤ ‖direction i‖ * ‖vertex i‖ :=
           mul_le_mul_of_nonneg_left (a.remainder_norm_le _) (norm_nonneg _)
     linarith [neg_le_of_abs_le habs]
-  exact weighted_displacement_nonneg_of_first_remainder
-    weight displacement first remainder bound (Real.sin a.angle)
-    (1 - Real.cos a.angle) hweight hbend hdecomp hremainder (by simpa using hdominates)
+  exact weighted_displacement_nonneg_of_first_remainder weight
+    (fun i => ⟪direction i, L (Q (vertex i) - vertex i)⟫) first remainder bound (Real.sin a.angle)
+    (1 - Real.cos a.angle) hweight hbend hdecomp hremainder hdominates
 
 /-- Symmetry-reindexed version of the local certificate.  The tracked inner
 vertex `innerIndex i` may differ from its supporting outer vertex

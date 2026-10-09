@@ -1089,9 +1089,7 @@ private theorem lower_le_weighted_sum {ι : Type} [Fintype ι]
     lower = ∑ i, weight i * lower := by
       rw [← Finset.sum_mul, hsum, one_mul]
     _ ≤ ∑ i, weight i * value i := by
-      apply Finset.sum_le_sum
-      intro i _
-      exact mul_le_mul_of_nonneg_left (hlower i) (hweight i)
+      exact Finset.sum_le_sum fun i _ => mul_le_mul_of_nonneg_left (hlower i) (hweight i)
 
 private theorem weighted_sum_le_upper {ι : Type} [Fintype ι]
     (weight value : ι → ℝ) (upper : ℝ)
@@ -1100,9 +1098,7 @@ private theorem weighted_sum_le_upper {ι : Type} [Fintype ι]
     ∑ i, weight i * value i ≤ upper := by
   calc
     _ ≤ ∑ i, weight i * upper := by
-      apply Finset.sum_le_sum
-      intro i _
-      exact mul_le_mul_of_nonneg_left (hupper i) (hweight i)
+      exact Finset.sum_le_sum fun i _ => mul_le_mul_of_nonneg_left (hupper i) (hweight i)
     _ = upper := by rw [← Finset.sum_mul, hsum, one_mul]
 
 theorem Box.weightedSupportControl_le_upper (box : Box) (i : Fin 3)

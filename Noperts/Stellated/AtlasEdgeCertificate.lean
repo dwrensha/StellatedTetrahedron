@@ -624,9 +624,7 @@ theorem Box.exactTotal_sub_approx_norm_le_error (box : Box)
     ∑ i, ‖box.exactContactVector p i - box.approxContactVector p i‖ ≤
         ∑ _ : Fin (box.edgePred + 1),
           10 * (box.dBound : ℝ) * RationalApprox.κ := by
-      apply Finset.sum_le_sum
-      intro i _
-      exact box.exactContact_sub_approx_norm_le_error hp i
+      exact Finset.sum_le_sum fun i _ => box.exactContact_sub_approx_norm_le_error hp i
     _ = (box.edgePred + 1 : ℝ) * 10 * (box.dBound : ℝ) *
         RationalApprox.κ := by simp; ring
 
@@ -833,8 +831,7 @@ theorem Box.actualDisplacement_eq_sum (box : Box) (p : AtlasPose ℝ)
   have hsum : box.actualDisplacement p =
       ∑ i, ⟪viewVector p, box.actualContactVector p i⟫ := by
     unfold Box.actualDisplacement Box.actualTotalVector
-    simp [PiLp.inner_apply, Finset.sum_apply, Finset.sum_mul]
-    rw [Finset.sum_comm]
+    exact inner_sum Finset.univ (box.actualContactVector p) (viewVector p)
   rw [hsum]
   apply Finset.sum_congr rfl
   intro i _

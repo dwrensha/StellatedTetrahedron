@@ -501,9 +501,7 @@ theorem IFrame.reduce_hi1 : 0 < f.reduce.hi1 ↔ 0 < f.hi1 := by
   rw [e]
   unfold IFrame.hi1
   rw [hc]
-  constructor
-  · intro h; exact mul_pos hg0 h
-  · intro h; exact pos_of_mul_pos_right h hg0.le
+  exact (mul_pos_iff_of_pos_left hg0).symm
 
 end reduce
 
